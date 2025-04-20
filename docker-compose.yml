@@ -1,0 +1,183 @@
+version: '3.8'
+
+services:
+  # Redis condiviso
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+  # RabbitMQ condiviso
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "15672:15672"  # management UI opzionale
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  # API Gateway (esposto pubblicamente)
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    restart: unless-stopped
+    depends_on:
+      - auth-service
+      - catalog-service
+      - order-service
+      - payment-service
+      - user-service
+      - notification-service
+      - analytics-service
+      - redis
+      - rabbitmq
+    env_file: ./api-gateway/.env.example
+    networks:
+      - internal
+    ports:
+      - "8080:80"    # esponi Nginx/Traefik del gateway
+
+# Definizione di ogni microservizio Laravel
+  auth-service:
+  catalog-service:
+  order-service:
+  payment-service:
+  user-service:
+  notification-service:
+  analytics-service:
+    <<: *laravel-service-template
+
+# Template per servizi Laravel
+x-laravel-service-template: &laravel-service-template
+  build: .
+  restart: unless-stopped
+  working_dir: /var/www/html
+  networks:
+    - internal
+  env_file: ./.env.example
+  depends_on:
+    - mysql-${SERVICE_NAME}
+    - redis
+    - rabbitmq
+  volumes:
+    - ./{{SERVICE_NAME}}:/var/www/html
+
+# Database MySQL dedicati
+  mysql-auth-service:
+    image: mysql:8.0
+    container_name: mysql-auth-service
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: auth_db
+      MYSQL_USER: auth_user
+      MYSQL_PASSWORD: auth_pass
+    volumes:
+      - mysql_auth_data:/var/lib/mysql
+    networks:
+      - internal
+
+  mysql-catalog-service:
+    image: mysql:8.0
+    container_name: mysql-catalog-service
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: catalog_db
+      MYSQL_USER: catalog_user
+      MYSQL_PASSWORD: catalog_pass
+    volumes:
+      - mysql_catalog_data:/var/lib/mysql
+    networks:
+      - internal
+
+  mysql-order-service:
+    image: mysql:8.0
+    container_name: mysql-order-service
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: order_db
+      MYSQL_USER: order_user
+      MYSQL_PASSWORD: order_pass
+    volumes:
+      - mysql_order_data:/var/lib/mysql
+    networks:
+      - internal
+
+  mysql-payment-service:
+    image: mysql:8.0
+    container_name: mysql-payment-service
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: payment_db
+      MYSQL_USER: payment_user
+      MYSQL_PASSWORD: payment_pass
+    volumes:
+      - mysql_payment_data:/var/lib/mysql
+    networks:
+      - internal
+
+  mysql-user-service:
+    image: mysql:8.0
+    container_name: mysql-user-service
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: user_db
+      MYSQL_USER: user_user
+      MYSQL_PASSWORD: user_pass
+    volumes:
+      - mysql_user_data:/var/lib/mysql
+    networks:
+      - internal
+
+  mysql-notification-service:
+    image: mysql:8.0
+    container_name: mysql-notification-service
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: notification_db
+      MYSQL_USER: notification_user
+      MYSQL_PASSWORD: notification_pass
+    volumes:
+      - mysql_notification_data:/var/lib/mysql
+    networks:
+      - internal
+
+  mysql-analytics-service:
+    image: mysql:8.0
+    container_name: mysql-analytics-service
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: analytics_db
+      MYSQL_USER: analytics_user
+      MYSQL_PASSWORD: analytics_pass
+    volumes:
+      - mysql_analytics_data:/var/lib/mysql
+    networks:
+      - internal
+
+volumes:
+  redis_data:
+  rabbitmq_data:
+  mysql_auth_data:
+  mysql_catalog_data:
+  mysql_order_data:
+  mysql_payment_data:
+  mysql_user_data:
+  mysql_notification_data:
+  mysql_analytics_data:
+
+networks:
+  internal:
+    driver: bridge

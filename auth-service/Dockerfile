@@ -15,6 +15,13 @@ RUN apk add --no-cache \
         zip \
         unzip
 
+RUN apk add --no-cache \
+        libpng \
+        libjpeg-turbo \
+        freetype \
+        icu-libs \
+        libzip
+
 # estensioni PHP necessarie alla maggior parte dei progetti Laravel
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
  && docker-php-ext-install \

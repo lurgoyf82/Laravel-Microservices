@@ -29,7 +29,7 @@ services:
     build: ./api-gateway
     container_name: api-gateway
     restart: unless-stopped
-    env_file: ./api-gateway/.env.example
+    env_file: ./api-gateway/.env
     depends_on:
       - redis
       - rabbitmq
@@ -52,7 +52,7 @@ services:
     build: ./auth-service
     container_name: auth-service
     restart: unless-stopped
-    env_file: ./auth-service/.env.example
+    env_file: ./auth-service/.env
     depends_on:
       - mysql-auth-service
       - redis
@@ -66,7 +66,7 @@ services:
     build: ./catalog-service
     container_name: catalog-service
     restart: unless-stopped
-    env_file: ./catalog-service/.env.example
+    env_file: ./catalog-service/.env
     depends_on:
       - mysql-catalog-service
       - redis
@@ -80,7 +80,7 @@ services:
     build: ./order-service
     container_name: order-service
     restart: unless-stopped
-    env_file: ./order-service/.env.example
+    env_file: ./order-service/.env
     depends_on:
       - mysql-order-service
       - redis
@@ -94,7 +94,7 @@ services:
     build: ./payment-service
     container_name: payment-service
     restart: unless-stopped
-    env_file: ./payment-service/.env.example
+    env_file: ./payment-service/.env
     depends_on:
       - mysql-payment-service
       - redis
@@ -108,7 +108,7 @@ services:
     build: ./user-service
     container_name: user-service
     restart: unless-stopped
-    env_file: ./user-service/.env.example
+    env_file: ./user-service/.env
     depends_on:
       - mysql-user-service
       - redis
@@ -122,7 +122,7 @@ services:
     build: ./notification-service
     container_name: notification-service
     restart: unless-stopped
-    env_file: ./notification-service/.env.example
+    env_file: ./notification-service/.env
     depends_on:
       - mysql-notification-service
       - redis
@@ -136,7 +136,7 @@ services:
     build: ./analytics-service
     container_name: analytics-service
     restart: unless-stopped
-    env_file: ./analytics-service/.env.example
+    env_file: ./analytics-service/.env
     depends_on:
       - mysql-analytics-service
       - redis

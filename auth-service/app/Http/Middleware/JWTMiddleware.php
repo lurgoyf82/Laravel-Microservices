@@ -9,6 +9,13 @@ use App\Factories\JwtProviderFactory;
 
 class JWTMiddleware
 {
+    /**
+     * Handle an incoming request by validating the JWT token in the Authorization header.
+     *
+     * @param  \Illuminate\Http\Request  $request  The incoming HTTP request.
+     * @param  \Closure  $next  The next middleware to call.
+     * @return \Symfony\Component\HttpFoundation\Response  The HTTP response.
+     */
     public function handle(Request $request, Closure $next): Response
     {
         $header = $request->header('Authorization');

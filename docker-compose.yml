@@ -8,6 +8,8 @@ services:
     restart: unless-stopped
     volumes:
       - redis_data:/data
+    networks:
+      - internal
 
   # RabbitMQ condiviso
   rabbitmq:
@@ -18,16 +20,21 @@ services:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
     ports:
-      - "15672:15672"  # management UI opzionale
+      - "15672:15672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - internal
 
   # API Gateway (esposto pubblicamente)
   api-gateway:
     build: ./api-gateway
     container_name: api-gateway
     restart: unless-stopped
+    env_file: ./api-gateway/.env.example
     depends_on:
+      - redis
+      - rabbitmq
       - auth-service
       - catalog-service
       - order-service
@@ -35,40 +42,113 @@ services:
       - user-service
       - notification-service
       - analytics-service
-      - redis
-      - rabbitmq
-    env_file: ./api-gateway/.env.example
+    volumes:
+      - ./api-gateway:/var/www/html
+    ports:
+      - "8080:80"
     networks:
       - internal
-    ports:
-      - "8080:80"    # esponi Nginx/Traefik del gateway
 
-# Definizione di ogni microservizio Laravel
+  # Microservizi Laravel
   auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    restart: unless-stopped
+    env_file: ./auth-service/.env.example
+    depends_on:
+      - mysql-auth-service
+      - redis
+      - rabbitmq
+    volumes:
+      - ./auth-service:/var/www/html
+    networks:
+      - internal
+
   catalog-service:
+    build: ./catalog-service
+    container_name: catalog-service
+    restart: unless-stopped
+    env_file: ./catalog-service/.env.example
+    depends_on:
+      - mysql-catalog-service
+      - redis
+      - rabbitmq
+    volumes:
+      - ./catalog-service:/var/www/html
+    networks:
+      - internal
+
   order-service:
+    build: ./order-service
+    container_name: order-service
+    restart: unless-stopped
+    env_file: ./order-service/.env.example
+    depends_on:
+      - mysql-order-service
+      - redis
+      - rabbitmq
+    volumes:
+      - ./order-service:/var/www/html
+    networks:
+      - internal
+
   payment-service:
+    build: ./payment-service
+    container_name: payment-service
+    restart: unless-stopped
+    env_file: ./payment-service/.env.example
+    depends_on:
+      - mysql-payment-service
+      - redis
+      - rabbitmq
+    volumes:
+      - ./payment-service:/var/www/html
+    networks:
+      - internal
+
   user-service:
+    build: ./user-service
+    container_name: user-service
+    restart: unless-stopped
+    env_file: ./user-service/.env.example
+    depends_on:
+      - mysql-user-service
+      - redis
+      - rabbitmq
+    volumes:
+      - ./user-service:/var/www/html
+    networks:
+      - internal
+
   notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    restart: unless-stopped
+    env_file: ./notification-service/.env.example
+    depends_on:
+      - mysql-notification-service
+      - redis
+      - rabbitmq
+    volumes:
+      - ./notification-service:/var/www/html
+    networks:
+      - internal
+
   analytics-service:
-    <<: *laravel-service-template
+    build: ./analytics-service
+    container_name: analytics-service
+    restart: unless-stopped
+    env_file: ./analytics-service/.env.example
+    depends_on:
+      - mysql-analytics-service
+      - redis
+      - rabbitmq
+    volumes:
+      - ./analytics-service:/var/www/html
+    networks:
+      - internal
 
-# Template per servizi Laravel
-x-laravel-service-template: &laravel-service-template
-  build: .
-  restart: unless-stopped
-  working_dir: /var/www/html
-  networks:
-    - internal
-  env_file: ./.env.example
-  depends_on:
-    - mysql-${SERVICE_NAME}
-    - redis
-    - rabbitmq
-  volumes:
-    - ./{{SERVICE_NAME}}:/var/www/html
-
-# Database MySQL dedicati
+  # Database MySQL dedicati
   mysql-auth-service:
     image: mysql:8.0
     container_name: mysql-auth-service

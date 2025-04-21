@@ -6,6 +6,8 @@ services:
     restart: unless-stopped
     volumes:
       - redis_data:/data
+    ports:
+      - "6379:6379"
     networks:
       - internal
 
@@ -75,6 +77,8 @@ services:
       - rabbitmq
     volumes:
       - ./catalog-service:/var/www/html
+    ports:
+      - "8002:80"
     networks:
       - internal
 
@@ -89,6 +93,8 @@ services:
       - rabbitmq
     volumes:
       - ./order-service:/var/www/html
+    ports:
+      - "8003:80"
     networks:
       - internal
 
@@ -103,6 +109,8 @@ services:
       - rabbitmq
     volumes:
       - ./payment-service:/var/www/html
+    ports:
+      - "8004:80"
     networks:
       - internal
 
@@ -117,6 +125,8 @@ services:
       - rabbitmq
     volumes:
       - ./user-service:/var/www/html
+    ports:
+      - "8005:80"
     networks:
       - internal
 
@@ -131,6 +141,8 @@ services:
       - rabbitmq
     volumes:
       - ./notification-service:/var/www/html
+    ports:
+      - "8007:80"
     networks:
       - internal
 
@@ -145,6 +157,8 @@ services:
       - rabbitmq
     volumes:
       - ./analytics-service:/var/www/html
+    ports:
+      - "8006:80"
     networks:
       - internal
 
@@ -160,8 +174,6 @@ services:
       MYSQL_PASSWORD: auth_pass
     volumes:
       - mysql_auth_data:/var/lib/mysql
-    #ports:
-    #  - "3306:3306"   
     networks:
       - internal
 

@@ -1,22 +1,60 @@
-# Anche il gateway è un’app Laravel che funge da BFF / reverse proxy logico.
-# Dockerfile identico, così manteniamo uniformità e semplifichiamo la CI.
+FROM php:8.2-apache AS build
 
-FROM php:8.2-fpm-alpine AS build
-RUN apk add --no-cache bash git curl libpng-dev libjpeg-turbo-dev freetype-dev libzip-dev oniguruma-dev icu-dev zip unzip
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg && docker-php-ext-install pdo_mysql mbstring zip exif pcntl intl bcmath gd
+# installa librerie di sistema e dipendenze per estensioni
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+     libpng-dev \
+     libjpeg-dev \
+     libfreetype6-dev \
+     libzip-dev \
+     libonig-dev \
+     libicu-dev \
+     pkg-config \
+     zip \
+     unzip \
+     git \
+     curl \
+  && docker-php-ext-configure gd --with-freetype --with-jpeg \
+  && docker-php-ext-install \
+       pdo_mysql \
+       mbstring \
+       zip \
+       exif \
+       pcntl \
+       intl \
+       bcmath \
+       gd \
+  && rm -rf /var/lib/apt/lists/*
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 WORKDIR /var/www/html
-#COPY composer.json composer.lock ./
-#RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
-RUN echo "<?php phpinfo();" > index.php 
+
+
 COPY . .
-FROM php:8.2-fpm-alpine
-RUN addgroup -g 1000 appuser && adduser -u 1000 -G appuser -s /bin/sh -D appuser
-RUN apk add --no-cache tzdata && cp /usr/share/zoneinfo/UTC /etc/localtime && echo "UTC" > /etc/timezone && apk del tzdata
-COPY --from=build /usr/local/lib/php/extensions /usr/local/lib/php/extensions
-COPY --from=build /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d
-WORKDIR /var/www/html
-COPY --chown=appuser:appuser --from=build /var/www/html /var/www/html
-USER appuser
-EXPOSE 9000
-CMD ["php-fpm"]
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
+
+
+FROM php:8.2-apache
+
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends tzdata \
+  && ln -sf /usr/share/zoneinfo/Europe/Rome /etc/localtime \
+  && echo "Europe/Rome" > /etc/timezone \
+  && apt-get purge -y --auto-remove tzdata \
+  && rm -rf /var/lib/apt/lists/*
+
+
+RUN a2enmod rewrite headers
+
+
+COPY --from=build /var/www/html /var/www/html
+COPY vhost.conf /etc/apache2/sites-available/000-default.conf
+
+
+RUN chown -R www-data:www-data /var/www/html
+
+EXPOSE 80
+
+CMD ["apache2-foreground"]

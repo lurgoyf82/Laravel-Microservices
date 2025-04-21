@@ -13,7 +13,7 @@ class GatewayController extends Controller
      * Il prefisso URL definisce il servizio target.
      * Esempio: GET /api/catalog/products -> catalog-service
      */
-    public function proxy(Request $request, string $service)
+    public function proxy_old(Request $request, string $service)
     {
         // Recupera configurazione endpoint interno
         $baseUrl = config("gateway.services.{$service}");
@@ -33,4 +33,41 @@ class GatewayController extends Controller
 
         return new JsonResponse($response->json(), $response->status());
     }
+
+    public function proxy(Request $request, string $service)
+    {
+        $baseUrl = config("gateway.services.{$service}");
+        if (! $baseUrl) {
+            return response()->json(['error' => 'Servizio non trovato'], 404);
+        }
+
+        // se nella route hai usato ->where('path','.*') e ->defaults('service',...)
+        $path = $request->route('path', '');
+
+        $url = rtrim($baseUrl, '/') . '/' . ltrim($path, '/');
+
+        // forward di tutti gli header tranne quelli Hop-by-Hop
+        $forwardHeaders = collect($request->headers->all())
+            ->except([
+                'host', 'connection', 'content-length',
+                'accept-encoding', 'keep-alive', 'transfer-encoding'
+            ])->mapWithKeys(fn($v,$k) => [$k => implode(';', $v)])
+            ->toArray();
+
+        $response = Http::withHeaders($forwardHeaders)
+            ->withBody(
+                $request->getContent(),
+                $request->header('Content-Type') ?? 'application/json'
+            )
+            ->send($request->method(), $url, [
+                'query' => $request->query(),
+            ]);
+
+        // prepara la risposta con status, body e headers originali
+        return response($response->body(), $response->status())
+            ->withHeaders(collect($response->headers())
+                ->except(['transfer-encoding', 'connection'])->toArray()
+            );
+    }
+
 }

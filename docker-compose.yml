@@ -158,6 +158,8 @@ services:
       MYSQL_PASSWORD: auth_pass
     volumes:
       - mysql_auth_data:/var/lib/mysql
+    #ports:
+    #  - "3306:3306"   
     networks:
       - internal
 

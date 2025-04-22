@@ -158,8 +158,8 @@ services:
       - rabbitmq
     volumes:
       - ./analytics-service:/var/www/html
-    ports:
-      - "8006:80"
+    #ports:
+    #  - "8006:80"
     networks:
       - internal
 

@@ -1,0 +1,36 @@
+services:
+  api-gateway:
+    build: .
+    container_name: api-gateway
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "80:80"
+    networks:
+      - api-gateway-network
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: api-gateway-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: api_gateway_db
+      MYSQL_USER: gateway_user
+      MYSQL_PASSWORD: gateway_pass
+    volumes:
+      - api_gateway_db_data:/var/lib/mysql
+    ports:
+      - "33060:3306"
+    networks:
+      - api-gateway-network
+
+volumes:
+  api_gateway_db_data:
+
+networks:
+  api-gateway-network:
+    driver: bridge

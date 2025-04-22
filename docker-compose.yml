@@ -28,6 +28,7 @@ services:
 
   # API Gateway (esposto pubblicamente)
   api-gateway:
+    image: api-gateway:latest
     build: ./api-gateway
     container_name: api-gateway
     restart: unless-stopped
@@ -45,7 +46,7 @@ services:
     volumes:
       - ./api-gateway:/var/www/html
     ports:
-      - "8080:80"
+      - "80:80"
     networks:
       - internal
 

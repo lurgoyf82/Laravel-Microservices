@@ -3,34 +3,35 @@ services:
     build: .
     container_name: api-gateway
     restart: unless-stopped
+    env_file: ./.env
     volumes:
       - .:/var/www/html
     ports:
       - "80:80"
     networks:
-      - api-gateway-network
+      - internal
     depends_on:
       - db
 
   db:
     image: mysql:8.0
-    container_name: api-gateway-db
+    container_name: mysql-api-gateway
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: rootpass
       MYSQL_DATABASE: api_gateway_db
-      MYSQL_USER: gateway_user
-      MYSQL_PASSWORD: gateway_pass
+      MYSQL_USER: api_gateway_user
+      MYSQL_PASSWORD: api_gateway_pass
     volumes:
-      - api_gateway_db_data:/var/lib/mysql
-    ports:
-      - "33060:3306"
+      - mysql_gateway_data:/var/lib/mysql
+    expose:
+      - "3306"
     networks:
-      - api-gateway-network
+      - internal
 
 volumes:
-  api_gateway_db_data:
+  mysql_gateway_data:
 
 networks:
-  api-gateway-network:
+  internal:
     driver: bridge

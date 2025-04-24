@@ -6,8 +6,8 @@ services:
     restart: unless-stopped
     volumes:
       - redis_data:/data
-    ports:
-      - "6379:6379"
+    expose:
+      - "6379"
     networks:
       - internal
 
@@ -19,8 +19,9 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
-    ports:
-      - "15672:15672"
+    expose:
+      - "5672"
+      - "15672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
@@ -43,6 +44,7 @@ services:
       - user-service
       - notification-service
       - analytics-service
+      - mysql-api-gateway
     volumes:
       - ./api-gateway:/var/www/html
     ports:
@@ -62,8 +64,8 @@ services:
       - rabbitmq
     volumes:
       - ./auth-service:/var/www/html
-    ports:
-      - "8001:80"
+    expose:
+      - "80"
     networks:
       - internal
 
@@ -78,8 +80,8 @@ services:
       - rabbitmq
     volumes:
       - ./catalog-service:/var/www/html
-    ports:
-      - "8002:80"
+    expose:
+      - "80"
     networks:
       - internal
 
@@ -94,8 +96,8 @@ services:
       - rabbitmq
     volumes:
       - ./order-service:/var/www/html
-    ports:
-      - "8003:80"
+    expose:
+      - "80"
     networks:
       - internal
 
@@ -110,8 +112,8 @@ services:
       - rabbitmq
     volumes:
       - ./payment-service:/var/www/html
-    ports:
-      - "8004:80"
+    expose:
+      - "80"
     networks:
       - internal
 
@@ -126,8 +128,8 @@ services:
       - rabbitmq
     volumes:
       - ./user-service:/var/www/html
-    ports:
-      - "8005:80"
+    expose:
+      - "80"
     networks:
       - internal
 
@@ -142,8 +144,8 @@ services:
       - rabbitmq
     volumes:
       - ./notification-service:/var/www/html
-    ports:
-      - "8007:80"
+    expose:
+      - "80"
     networks:
       - internal
 
@@ -158,12 +160,29 @@ services:
       - rabbitmq
     volumes:
       - ./analytics-service:/var/www/html
-    ports:
-      - "8006:80"
+    expose:
+      - "80"
     networks:
       - internal
 
   # Database MySQL dedicati
+  
+
+  mysql-api-gateway:
+    image: mysql:8.0
+    container_name: mysql-api-gateway
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: api_gateway_db
+      MYSQL_USER: api_gateway_user
+      MYSQL_PASSWORD: api_gateway_pass
+    volumes:
+      - mysql_gateway_data:/var/lib/mysql
+    networks:
+      - internal
+
+
   mysql-auth-service:
     image: mysql:8.0
     container_name: mysql-auth-service
@@ -265,6 +284,7 @@ services:
 volumes:
   redis_data:
   rabbitmq_data:
+  mysql_gateway_data:
   mysql_auth_data:
   mysql_catalog_data:
   mysql_order_data:

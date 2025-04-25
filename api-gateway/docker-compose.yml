@@ -1,10 +1,12 @@
 #C:\Repos\Laravel-Microservices\api-gateway\docker-compose.yml
 services:
   api-gateway:
-    build: .
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    env_file: api-gateway/.env
     container_name: api-gateway
     restart: unless-stopped
-    env_file: ./.env
     volumes:
       - .:/var/www/html
     ports:
@@ -13,7 +15,7 @@ services:
       - net-api-gateway-analytics-service
       - net-api-gateway-auth-service
       - net-api-gateway-catalog-service
-      - net-api-gateway-frontend
+      #- net-api-gateway-frontend
       - net-api-gateway-notification-service
       - net-api-gateway-order-service
       - net-api-gateway-payment-service
@@ -26,7 +28,7 @@ networks:
   net-api-gateway-analytics-service:        { external: true }
   net-api-gateway-auth-service:             { external: true }
   net-api-gateway-catalog-service:          { external: true }
-  net-api-gateway-frontend:                 { external: true }
+  #net-api-gateway-frontend:                 { external: true }
   net-api-gateway-notification-service:     { external: true }
   net-api-gateway-order-service:            { external: true }
   net-api-gateway-payment-service:          { external: true }

@@ -2,11 +2,10 @@
 services:
   auth-service:                                         # servizio Laravel “auth-service”
     build:                                              # builda un’immagine partendo dal Dockerfile in questa cartella
-      context: .
+      context: ./auth-service
       dockerfile: Dockerfile
     container_name: auth-service                        # nome fisso del container
-    env_file:
-      - ./.env                                          # carica variabili (DB, app key, ecc.) dal file .env locale
+    env_file: auth-service/.env                       # carica variabili (DB, app key, ecc.) dal file .env locale
     volumes:
       - ./:/var/www/html                                # bind-mount del sorgente: ogni modifica locale si vede subito nel container
     depends_on:                                         # ordine di avvio (non health-check)

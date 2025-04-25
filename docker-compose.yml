@@ -30,7 +30,6 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - net-rabbitmq-analytics-service
-      - net-rabbitmq-api-gateway
       - net-rabbitmq-auth-service
       - net-rabbitmq-catalog-service
       - net-rabbitmq-frontend
@@ -97,7 +96,7 @@ networks:
   net-api-gateway-analytics-service:
   net-api-gateway-auth-service:
   net-api-gateway-catalog-service:
-  net-api-gateway-frontend:
+  #net-api-gateway-frontend:
   net-api-gateway-notification-service:
   net-api-gateway-order-service:
   net-api-gateway-payment-service:

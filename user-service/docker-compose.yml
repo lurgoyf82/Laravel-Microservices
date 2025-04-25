@@ -1,12 +1,11 @@
 #C:\Repos\Laravel-Microservices\user-service\docker-compose.yml
 services:
-  user-service:                                    # servizio Laravel “user-service”
+  user-service:                                         # servizio Laravel “user-service”
     build:                                              # builda un’immagine partendo dal Dockerfile in questa cartella
-      context: .
+      context: ./user-service
       dockerfile: Dockerfile
-    container_name: user-service                   # nome fisso del container
-    env_file:
-      - ./.env                                          # carica variabili (DB, app key, ecc.) dal file .env locale
+    container_name: user-service                        # nome fisso del container
+    env_file: user-service/.env                       # carica variabili (DB, app key, ecc.) dal file .env locale
     volumes:
       - ./:/var/www/html                                # bind-mount del sorgente: ogni modifica locale si vede subito nel container
     depends_on:                                         # ordine di avvio (non health-check)

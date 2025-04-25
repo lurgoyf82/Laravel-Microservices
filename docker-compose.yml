@@ -12,7 +12,7 @@ services:
       - net-redis-api-gateway
       - net-redis-auth-service
       - net-redis-catalog-service
-      - net-redis-frontend
+      #- net-redis-frontend
       - net-redis-notification-service
       - net-redis-order-service
       - net-redis-payment-service
@@ -32,14 +32,14 @@ services:
       - net-rabbitmq-analytics-service
       - net-rabbitmq-auth-service
       - net-rabbitmq-catalog-service
-      - net-rabbitmq-frontend
+      #- net-rabbitmq-frontend
       - net-rabbitmq-notification-service
       - net-rabbitmq-order-service
       - net-rabbitmq-payment-service
       - net-rabbitmq-user-service
                              
   sql-server:                                             # database MySQL dedicato
-    image: mcr.microsoft.com/mssql/server:2022-latest     # immagine MySQL 8.x ufficiale
+    image: mcr.microsoft.com/mssql/server:2019-latest     # immagine MySQL 8.x ufficiale
     container_name: sql-server                            # nome fisso del container DB
     restart: unless-stopped                               # riavvia dopo crash, ma non se fermato a mano
     environment:                                          # credenziali/database da creare al primo avvio
@@ -67,7 +67,7 @@ networks:
   net-redis-api-gateway:
   net-redis-auth-service:
   net-redis-catalog-service:
-  net-redis-frontend:
+  #net-redis-frontend:
   net-redis-notification-service:
   net-redis-order-service:
   net-redis-payment-service:
@@ -77,7 +77,7 @@ networks:
   net-rabbitmq-analytics-service:
   net-rabbitmq-auth-service:
   net-rabbitmq-catalog-service:
-  net-rabbitmq-frontend:
+  #net-rabbitmq-frontend:
   net-rabbitmq-notification-service:
   net-rabbitmq-order-service:
   net-rabbitmq-payment-service:

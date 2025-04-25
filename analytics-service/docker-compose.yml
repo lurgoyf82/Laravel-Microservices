@@ -13,10 +13,11 @@ services:
       - redis
       - rabbitmq
     networks:
-      - net-api-gateway-analytics-service
-      - net-rabbitmq-analytics-service
-      - net-redis-analytics-service
-      - net-sql-server-analytics-service                # rete verso il gruppo SQL Server 1
+      - internal
+      # - net-api-gateway-analytics-service
+      # - net-rabbitmq-analytics-service
+      # - net-redis-analytics-service
+      # - net-sql-server-analytics-service                # rete verso il gruppo SQL Server 1
 
 # networks:
 #   net-api-gateway-analytics-service: { external: true }

@@ -13,10 +13,11 @@ services:
       - redis
       - rabbitmq
     networks:
-      - net-api-gateway-payment-service
-      - net-rabbitmq-payment-service
-      - net-redis-payment-service
-      - net-sql-server-payment-service                  # rete verso il gruppo SQL Server 1
+      - internal
+      # - net-api-gateway-payment-service
+      # - net-rabbitmq-payment-service
+      # - net-redis-payment-service
+      # - net-sql-server-payment-service                  # rete verso il gruppo SQL Server 1
 
 # networks:
 #   net-api-gateway-payment-service: { external: true }

@@ -13,10 +13,11 @@ services:
       - redis
       - rabbitmq
     networks:
-      - net-api-gateway-notification-service
-      - net-rabbitmq-notification-service
-      - net-redis-notification-service
-      - net-sql-server-notification-service             # rete verso il gruppo SQL Server 1
+      - internal
+      # - net-api-gateway-notification-service
+      # - net-rabbitmq-notification-service
+      # - net-redis-notification-service
+      # - net-sql-server-notification-service             # rete verso il gruppo SQL Server 1
 
 # networks:
 #   net-api-gateway-notification-service: { external: true }

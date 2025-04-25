@@ -13,10 +13,11 @@ services:
       - redis
       - rabbitmq
     networks:
-      - net-api-gateway-catalog-service
-      - net-rabbitmq-catalog-service
-      - net-redis-catalog-service
-      - net-sql-server-catalog-service                # rete verso il gruppo SQL Server 1
+      - internal
+      # - net-api-gateway-catalog-service
+      # - net-rabbitmq-catalog-service
+      # - net-redis-catalog-service
+      # - net-sql-server-catalog-service                # rete verso il gruppo SQL Server 1
 
 # networks:
 #   net-api-gateway-catalog-service: { external: true }

@@ -13,10 +13,11 @@ services:
       - redis
       - rabbitmq
     networks:
-      - net-api-gateway-order-service
-      - net-rabbitmq-order-service
-      - net-redis-order-service
-      - net-sql-server-order-service                # rete verso il gruppo SQL Server 1
+      - internal
+      # - net-api-gateway-order-service
+      # - net-rabbitmq-order-service
+      # - net-redis-order-service
+      # - net-sql-server-order-service                # rete verso il gruppo SQL Server 1
 
 # networks:
 #   net-api-gateway-order-service: { external: true }

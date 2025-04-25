@@ -13,10 +13,11 @@ services:
       - redis
       - rabbitmq
     networks:
-      - net-api-gateway-auth-service
-      - net-rabbitmq-auth-service
-      - net-redis-auth-service
-      - net-sql-server-auth-service                     # rete verso il gruppo SQL Server 1
+      - internal
+      # - net-api-gateway-auth-service
+      # - net-rabbitmq-auth-service
+      # - net-redis-auth-service
+      # - net-sql-server-auth-service                     # rete verso il gruppo SQL Server 1
 
 # networks:
 #   net-api-gateway-auth-service: { external: true }

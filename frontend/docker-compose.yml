@@ -13,10 +13,11 @@ services:
       - redis
       - rabbitmq
     networks:
-      - net-api-gateway-frontend
-      - net-rabbitmq-frontend
-      - net-redis-frontend
-      - net-sql-server-frontend                # rete verso il gruppo SQL Server 1
+      - internal
+      # - net-api-gateway-frontend
+      # - net-rabbitmq-frontend
+      # - net-redis-frontend
+      # - net-sql-server-frontend                # rete verso il gruppo SQL Server 1
 
 # networks:
 #   net-api-gateway-frontend: { external: true }

@@ -12,15 +12,16 @@ services:
     ports:
       - "8080:80"
     networks:
-      - net-api-gateway-analytics-service
-      - net-api-gateway-auth-service
-      - net-api-gateway-catalog-service
-      #- net-api-gateway-frontend
-      - net-api-gateway-notification-service
-      - net-api-gateway-order-service
-      - net-api-gateway-payment-service
-      - net-api-gateway-user-service
-      - net-redis-api-gateway
+      - internal
+      # - net-api-gateway-analytics-service
+      # - net-api-gateway-auth-service
+      # - net-api-gateway-catalog-service
+      # #- net-api-gateway-frontend
+      # - net-api-gateway-notification-service
+      # - net-api-gateway-order-service
+      # - net-api-gateway-payment-service
+      # - net-api-gateway-user-service
+      # - net-redis-api-gateway
     depends_on:
       - redis
     

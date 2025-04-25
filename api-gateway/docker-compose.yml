@@ -24,15 +24,15 @@ services:
     depends_on:
       - redis
     
-networks:
-  net-api-gateway-analytics-service:        { external: true }
-  net-api-gateway-auth-service:             { external: true }
-  net-api-gateway-catalog-service:          { external: true }
-  #net-api-gateway-frontend:                 { external: true }
-  net-api-gateway-notification-service:     { external: true }
-  net-api-gateway-order-service:            { external: true }
-  net-api-gateway-payment-service:          { external: true }
-  net-api-gateway-user-service:             { external: true }
-  net-redis-api-gateway:                    { external: true }
+# networks:
+#   net-api-gateway-analytics-service:        { external: true }
+#   net-api-gateway-auth-service:             { external: true }
+#   net-api-gateway-catalog-service:          { external: true }
+#   #net-api-gateway-frontend:                 { external: true }
+#   net-api-gateway-notification-service:     { external: true }
+#   net-api-gateway-order-service:            { external: true }
+#   net-api-gateway-payment-service:          { external: true }
+#   net-api-gateway-user-service:             { external: true }
+#   net-redis-api-gateway:                    { external: true }
     
 

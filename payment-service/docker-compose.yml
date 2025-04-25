@@ -18,8 +18,8 @@ services:
       - net-redis-payment-service
       - net-sql-server-payment-service                  # rete verso il gruppo SQL Server 1
 
-networks:
-  net-api-gateway-payment-service: { external: true }
-  net-rabbitmq-payment-service:    { external: true }
-  net-redis-payment-service:       { external: true }
-  net-sql-server-payment-service:  { external: true }
+# networks:
+#   net-api-gateway-payment-service: { external: true }
+#   net-rabbitmq-payment-service:    { external: true }
+#   net-redis-payment-service:       { external: true }
+#   net-sql-server-payment-service:  { external: true }

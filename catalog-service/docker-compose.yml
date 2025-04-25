@@ -18,8 +18,8 @@ services:
       - net-redis-catalog-service
       - net-sql-server-catalog-service                # rete verso il gruppo SQL Server 1
 
-networks:
-  net-api-gateway-catalog-service: { external: true }
-  net-rabbitmq-catalog-service:    { external: true }
-  net-redis-catalog-service:       { external: true }
-  net-sql-server-catalog-service:  { external: true }
+# networks:
+#   net-api-gateway-catalog-service: { external: true }
+#   net-rabbitmq-catalog-service:    { external: true }
+#   net-redis-catalog-service:       { external: true }
+#   net-sql-server-catalog-service:  { external: true }

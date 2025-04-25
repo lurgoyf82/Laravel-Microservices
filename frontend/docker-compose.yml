@@ -18,8 +18,8 @@ services:
       - net-redis-frontend
       - net-sql-server-frontend                # rete verso il gruppo SQL Server 1
 
-networks:
-  net-api-gateway-frontend: { external: true }
-  net-rabbitmq-frontend:    { external: true }
-  net-redis-frontend:       { external: true }
-  net-sql-server-frontend:  { external: true }
+# networks:
+#   net-api-gateway-frontend: { external: true }
+#   net-rabbitmq-frontend:    { external: true }
+#   net-redis-frontend:       { external: true }
+#   net-sql-server-frontend:  { external: true }

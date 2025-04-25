@@ -18,8 +18,8 @@ services:
       - net-redis-notification-service
       - net-sql-server-notification-service             # rete verso il gruppo SQL Server 1
 
-networks:
-  net-api-gateway-notification-service: { external: true }
-  net-rabbitmq-notification-service:    { external: true }
-  net-redis-notification-service:       { external: true }
-  net-sql-server-notification-service:  { external: true }
+# networks:
+#   net-api-gateway-notification-service: { external: true }
+#   net-rabbitmq-notification-service:    { external: true }
+#   net-redis-notification-service:       { external: true }
+#   net-sql-server-notification-service:  { external: true }

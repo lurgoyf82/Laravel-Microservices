@@ -18,8 +18,8 @@ services:
       - net-redis-auth-service
       - net-sql-server-auth-service                     # rete verso il gruppo SQL Server 1
 
-networks:
-  net-api-gateway-auth-service: { external: true }
-  net-rabbitmq-auth-service:    { external: true }
-  net-redis-auth-service:       { external: true }
-  net-sql-server-auth-service:  { external: true }
+# networks:
+#   net-api-gateway-auth-service: { external: true }
+#   net-rabbitmq-auth-service:    { external: true }
+#   net-redis-auth-service:       { external: true }
+#   net-sql-server-auth-service:  { external: true }

@@ -18,8 +18,8 @@ services:
       - net-redis-user-service
       - net-sql-server-user-service                # rete verso il gruppo SQL Server 1
 
-networks:
-  net-api-gateway-user-service: { external: true }
-  net-rabbitmq-user-service:    { external: true }
-  net-redis-user-service:       { external: true }
-  net-sql-server-user-service:  { external: true }
+# networks:
+#   net-api-gateway-user-service: { external: true }
+#   net-rabbitmq-user-service:    { external: true }
+#   net-redis-user-service:       { external: true }
+#   net-sql-server-user-service:  { external: true }

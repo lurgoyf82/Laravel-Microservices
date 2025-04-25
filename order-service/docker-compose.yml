@@ -18,8 +18,8 @@ services:
       - net-redis-order-service
       - net-sql-server-order-service                # rete verso il gruppo SQL Server 1
 
-networks:
-  net-api-gateway-order-service: { external: true }
-  net-rabbitmq-order-service:    { external: true }
-  net-redis-order-service:       { external: true }
-  net-sql-server-order-service:  { external: true }
+# networks:
+#   net-api-gateway-order-service: { external: true }
+#   net-rabbitmq-order-service:    { external: true }
+#   net-redis-order-service:       { external: true }
+#   net-sql-server-order-service:  { external: true }

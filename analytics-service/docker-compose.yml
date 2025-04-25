@@ -18,8 +18,8 @@ services:
       - net-redis-analytics-service
       - net-sql-server-analytics-service                # rete verso il gruppo SQL Server 1
 
-networks:
-  net-api-gateway-analytics-service: { external: true }
-  net-rabbitmq-analytics-service:    { external: true }
-  net-redis-analytics-service:       { external: true }
-  net-sql-server-analytics-service:  { external: true }
+# networks:
+#   net-api-gateway-analytics-service: { external: true }
+#   net-rabbitmq-analytics-service:    { external: true }
+#   net-redis-analytics-service:       { external: true }
+#   net-sql-server-analytics-service:  { external: true }

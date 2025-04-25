@@ -1,63 +1,26 @@
+#C:\Repos\Laravel-Microservices\auth-service\docker-compose.yml
 services:
-  auth-service:                                          # servizio Laravel “auth-service”
-    build:                                               # builda un’immagine partendo dal Dockerfile in questa cartella
+  auth-service:                                         # servizio Laravel “auth-service”
+    build:                                              # builda un’immagine partendo dal Dockerfile in questa cartella
       context: .
-    container_name: auth-service                         # nome fisso del container
+      dockerfile: Dockerfile
+    container_name: auth-service                        # nome fisso del container
     env_file:
-      - ./.env                                         # carica variabili (DB, app key, ecc.) dal file .env locale
+      - ./.env                                          # carica variabili (DB, app key, ecc.) dal file .env locale
     volumes:
       - ./:/var/www/html                                # bind-mount del sorgente: ogni modifica locale si vede subito nel container
     depends_on:                                         # ordine di avvio (non health-check)
-      - mysql-auth
+      - sql-server                                    
       - redis
       - rabbitmq
     networks:
-      - internal                                       # rete Docker “internal” (la stessa del compose globale)
-
-  mysql-auth:                                           # database MySQL dedicato a auth-service
-    image: mysql:8.0                                    # immagine MySQL 8.x ufficiale
-    container_name: mysql-auth                          # nome fisso del container DB
-    restart: unless-stopped                             # riavvia dopo crash, ma non se fermato a mano
-    environment:                                        # credenziali/database da creare al primo avvio
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}       # letta dal .env (es. rootpass)
-      MYSQL_DATABASE: ${DB_DATABASE}                    # letta dal .env (es. auth_db)
-      MYSQL_USER: ${DB_USERNAME}                        # letta dal .env (es. auth_user)
-      MYSQL_PASSWORD: ${DB_PASSWORD}                    # letta dal .env (es. auth_pass)
-    volumes:
-      - mysql_auth_data:/var/lib/mysql                  # persistenza dei dati InnoDB
-    networks:
-      - internal
-
-  redis:                                                # cache / message broker semplice
-    image: redis:7-alpine                               # Redis 7 su Alpine Linux
-    container_name: redis                               # nome container
-    restart: unless-stopped
-    volumes:
-      - redis_data:/data                                # persistenza snapshot Redis
-    networks:
-      - internal
-
-  rabbitmq:                                             # message broker per code/eventi
-    image: rabbitmq:3-management-alpine                 # RabbitMQ + interfaccia management
-    container_name: rabbitmq
-    restart: unless-stopped
-    environment:
-      RABBITMQ_DEFAULT_USER: guest                      # credenziali di default
-      RABBITMQ_DEFAULT_PASS: guest
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq                 # persistenza code e configurazioni
-    networks:
-      - internal
-
-# Nota: nessuno di questi servizi espone porte su host.
-# Comunicano solo sulla rete Docker “internal”, e saranno raggiunti *solo*
-# dall’API‑Gateway (o da altri container collegati a “internal”).
+      - net-api-gateway-auth-service
+      - net-rabbitmq-auth-service
+      - net-redis-auth-service
+      - net-sql-server-auth-service                     # rete verso il gruppo SQL Server 1
 
 networks:
-  internal:
-    external: true                                      # usa la rete bridge “internal” già definita a livello globale
-
-volumes:
-  mysql_auth_data:                                      # definisce i volumi nominati usati sopra
-  redis_data:
-  rabbitmq_data:
+  net-api-gateway-auth-service: { external: true }
+  net-rabbitmq-auth-service:    { external: true }
+  net-redis-auth-service:       { external: true }
+  net-sql-server-auth-service:  { external: true }

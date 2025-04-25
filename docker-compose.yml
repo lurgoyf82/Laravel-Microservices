@@ -1,3 +1,4 @@
+#C:\Repos\Laravel-Microservices\docker-compose.yml
 services:
   # Redis condiviso
   redis:
@@ -6,10 +7,16 @@ services:
     restart: unless-stopped
     volumes:
       - redis_data:/data
-    expose:
-      - "6379"
     networks:
-      - internal
+      - net-redis-analytics-service
+      - net-redis-api-gateway
+      - net-redis-auth-service
+      - net-redis-catalog-service
+      - net-redis-frontend
+      - net-redis-notification-service
+      - net-redis-order-service
+      - net-redis-payment-service
+      - net-redis-user-service
 
   # RabbitMQ condiviso
   rabbitmq:
@@ -19,280 +26,79 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
-    expose:
-      - "5672"
-      - "15672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
-      - internal
-
-  # API Gateway (esposto pubblicamente)
-  api-gateway:
-    image: api-gateway:latest
-    build: ./api-gateway
-    container_name: api-gateway
-    restart: unless-stopped
-    env_file: ./api-gateway/.env
-    depends_on:
-      - redis
-      - rabbitmq
-      - auth-service
-      - catalog-service
-      - order-service
-      - payment-service
-      - user-service
-      - notification-service
-      - analytics-service
-      - mysql-api-gateway
+      - net-rabbitmq-analytics-service
+      - net-rabbitmq-api-gateway
+      - net-rabbitmq-auth-service
+      - net-rabbitmq-catalog-service
+      - net-rabbitmq-frontend
+      - net-rabbitmq-notification-service
+      - net-rabbitmq-order-service
+      - net-rabbitmq-payment-service
+      - net-rabbitmq-user-service
+                             
+  sql-server:                                             # database MySQL dedicato
+    image: mcr.microsoft.com/mssql/server:2022-latest     # immagine MySQL 8.x ufficiale
+    container_name: sql-server                            # nome fisso del container DB
+    restart: unless-stopped                               # riavvia dopo crash, ma non se fermato a mano
+    environment:                                          # credenziali/database da creare al primo avvio
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: rootpass
     volumes:
-      - ./api-gateway:/var/www/html
-    ports:
-      - "80:80"
+      - sql-server-data:/var/opt/mssql
     networks:
-      - internal
-
-  # Microservizi Laravel
-  auth-service:
-    build: ./auth-service
-    container_name: auth-service
-    restart: unless-stopped
-    env_file: ./auth-service/.env
-    depends_on:
-      - mysql-auth-service
-      - redis
-      - rabbitmq
-    volumes:
-      - ./auth-service:/var/www/html
-    expose:
-      - "80"
-    networks:
-      - internal
-
-  catalog-service:
-    build: ./catalog-service
-    container_name: catalog-service
-    restart: unless-stopped
-    env_file: ./catalog-service/.env
-    depends_on:
-      - mysql-catalog-service
-      - redis
-      - rabbitmq
-    volumes:
-      - ./catalog-service:/var/www/html
-    expose:
-      - "80"
-    networks:
-      - internal
-
-  order-service:
-    build: ./order-service
-    container_name: order-service
-    restart: unless-stopped
-    env_file: ./order-service/.env
-    depends_on:
-      - mysql-order-service
-      - redis
-      - rabbitmq
-    volumes:
-      - ./order-service:/var/www/html
-    expose:
-      - "80"
-    networks:
-      - internal
-
-  payment-service:
-    build: ./payment-service
-    container_name: payment-service
-    restart: unless-stopped
-    env_file: ./payment-service/.env
-    depends_on:
-      - mysql-payment-service
-      - redis
-      - rabbitmq
-    volumes:
-      - ./payment-service:/var/www/html
-    expose:
-      - "80"
-    networks:
-      - internal
-
-  user-service:
-    build: ./user-service
-    container_name: user-service
-    restart: unless-stopped
-    env_file: ./user-service/.env
-    depends_on:
-      - mysql-user-service
-      - redis
-      - rabbitmq
-    volumes:
-      - ./user-service:/var/www/html
-    expose:
-      - "80"
-    networks:
-      - internal
-
-  notification-service:
-    build: ./notification-service
-    container_name: notification-service
-    restart: unless-stopped
-    env_file: ./notification-service/.env
-    depends_on:
-      - mysql-notification-service
-      - redis
-      - rabbitmq
-    volumes:
-      - ./notification-service:/var/www/html
-    expose:
-      - "80"
-    networks:
-      - internal
-
-  analytics-service:
-    build: ./analytics-service
-    container_name: analytics-service
-    restart: unless-stopped
-    env_file: ./analytics-service/.env
-    depends_on:
-      - mysql-analytics-service
-      - redis
-      - rabbitmq
-    volumes:
-      - ./analytics-service:/var/www/html
-    expose:
-      - "80"
-    networks:
-      - internal
-
-  # Database MySQL dedicati
-  
-
-  mysql-api-gateway:
-    image: mysql:8.0
-    container_name: mysql-api-gateway
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: api_gateway_db
-      MYSQL_USER: api_gateway_user
-      MYSQL_PASSWORD: api_gateway_pass
-    volumes:
-      - mysql_gateway_data:/var/lib/mysql
-    networks:
-      - internal
-
-
-  mysql-auth-service:
-    image: mysql:8.0
-    container_name: mysql-auth-service
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: auth_db
-      MYSQL_USER: auth_user
-      MYSQL_PASSWORD: auth_pass
-    volumes:
-      - mysql_auth_data:/var/lib/mysql
-    networks:
-      - internal
-
-  mysql-catalog-service:
-    image: mysql:8.0
-    container_name: mysql-catalog-service
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: catalog_db
-      MYSQL_USER: catalog_user
-      MYSQL_PASSWORD: catalog_pass
-    volumes:
-      - mysql_catalog_data:/var/lib/mysql
-    networks:
-      - internal
-
-  mysql-order-service:
-    image: mysql:8.0
-    container_name: mysql-order-service
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: order_db
-      MYSQL_USER: order_user
-      MYSQL_PASSWORD: order_pass
-    volumes:
-      - mysql_order_data:/var/lib/mysql
-    networks:
-      - internal
-
-  mysql-payment-service:
-    image: mysql:8.0
-    container_name: mysql-payment-service
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: payment_db
-      MYSQL_USER: payment_user
-      MYSQL_PASSWORD: payment_pass
-    volumes:
-      - mysql_payment_data:/var/lib/mysql
-    networks:
-      - internal
-
-  mysql-user-service:
-    image: mysql:8.0
-    container_name: mysql-user-service
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: user_db
-      MYSQL_USER: user_user
-      MYSQL_PASSWORD: user_pass
-    volumes:
-      - mysql_user_data:/var/lib/mysql
-    networks:
-      - internal
-
-  mysql-notification-service:
-    image: mysql:8.0
-    container_name: mysql-notification-service
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: notification_db
-      MYSQL_USER: notification_user
-      MYSQL_PASSWORD: notification_pass
-    volumes:
-      - mysql_notification_data:/var/lib/mysql
-    networks:
-      - internal
-
-  mysql-analytics-service:
-    image: mysql:8.0
-    container_name: mysql-analytics-service
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: analytics_db
-      MYSQL_USER: analytics_user
-      MYSQL_PASSWORD: analytics_pass
-    volumes:
-      - mysql_analytics_data:/var/lib/mysql
-    networks:
-      - internal
+      - net-sql-server-analytics-service
+      - net-sql-server-auth-service
+      - net-sql-server-catalog-service
+      - net-sql-server-notification-service
+      - net-sql-server-order-service
+      - net-sql-server-payment-service
+      - net-sql-server-user-service
 
 volumes:
   redis_data:
   rabbitmq_data:
-  mysql_gateway_data:
-  mysql_auth_data:
-  mysql_catalog_data:
-  mysql_order_data:
-  mysql_payment_data:
-  mysql_user_data:
-  mysql_notification_data:
-  mysql_analytics_data:
+  sql-server-data:
 
 networks:
-  internal:
-    driver: bridge
+  # redis <-> each service
+  net-redis-analytics-service:
+  net-redis-api-gateway:
+  net-redis-auth-service:
+  net-redis-catalog-service:
+  net-redis-frontend:
+  net-redis-notification-service:
+  net-redis-order-service:
+  net-redis-payment-service:
+  net-redis-user-service:
+
+  # rabbitmq <-> each service
+  net-rabbitmq-analytics-service:
+  net-rabbitmq-auth-service:
+  net-rabbitmq-catalog-service:
+  net-rabbitmq-frontend:
+  net-rabbitmq-notification-service:
+  net-rabbitmq-order-service:
+  net-rabbitmq-payment-service:
+  net-rabbitmq-user-service:
+  
+  # sql-server <-> each service
+  net-sql-server-analytics-service:
+  net-sql-server-auth-service:
+  net-sql-server-catalog-service:
+  net-sql-server-notification-service:
+  net-sql-server-order-service:
+  net-sql-server-payment-service:
+  net-sql-server-user-service:
+  
+  # api-gateway <-> each service
+  net-api-gateway-analytics-service:
+  net-api-gateway-auth-service:
+  net-api-gateway-catalog-service:
+  net-api-gateway-frontend:
+  net-api-gateway-notification-service:
+  net-api-gateway-order-service:
+  net-api-gateway-payment-service:
+  net-api-gateway-user-service:

@@ -26,7 +26,9 @@ Route::get('/auth-service/{any?}', function ($any = null) {
 ->where('any', '.*');
 /**/
 
-
+Route::get('/', function () {
+    return view('welcome');
+});
 
 Route::any('/auth-service/{any?}', function(Request $request, $any = '') {
     // 1) L'URL interno: il service name "auth-service" + porta 80 interna

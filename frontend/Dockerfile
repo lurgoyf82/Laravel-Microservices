@@ -53,7 +53,7 @@ COPY --chown=appuser:appuser --from=build /var/www/html /var/www/html
 USER appuser
 
 # Expose PHP-FPM socket (not port)
-EXPOSE 9000
+EXPOSE 80
 
 # Entrypoint
 CMD ["php-fpm"]

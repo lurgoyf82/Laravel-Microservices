@@ -5,9 +5,11 @@ services:
       context: ./analytics-service
       dockerfile: Dockerfile
     container_name: analytics-service                   # nome fisso del container
-    env_file: analytics-service/.env                  # carica variabili (DB, app key, ecc.) dal file .env locale
+    env_file: analytics-service/.env                    # carica variabili (DB, app key, ecc.) dal file .env locale
     volumes:
-      - ./:/var/www/html                                # bind-mount del sorgente: ogni modifica locale si vede subito nel container
+      - ./analytics-service:/var/www/html               # bind-mount del sorgente: ogni modifica locale si vede subito nel container
+    ports:
+      - "8007:80"
     depends_on:                                         # ordine di avvio (non health-check)
       - sql-server                                    
       - redis
@@ -17,7 +19,7 @@ services:
       # - net-api-gateway-analytics-service
       # - net-rabbitmq-analytics-service
       # - net-redis-analytics-service
-      # - net-sql-server-analytics-service                # rete verso il gruppo SQL Server 1
+      # - net-sql-server-analytics-service               # rete verso il gruppo SQL Server 1
 
 # networks:
 #   net-api-gateway-analytics-service: { external: true }

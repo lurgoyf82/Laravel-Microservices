@@ -8,9 +8,10 @@ services:
     container_name: api-gateway
     restart: unless-stopped
     volumes:
-      - .:/var/www/html
+      - ./api-gateway:/var/www/html
     ports:
-      - "8080:80"
+      - "8000:80"
+      - "8443:443"
     networks:
       - internal
       # - net-api-gateway-analytics-service

@@ -53,5 +53,5 @@ RUN a2enmod rewrite headers proxy proxy_http
 COPY --from=build /var/www/html /var/www/html
 COPY vhost.conf /etc/apache2/sites-available/000-default.conf
 RUN chown -R www-data:www-data /var/www/html
-EXPOSE 8005
+EXPOSE 80
 CMD ["apache2-foreground"]

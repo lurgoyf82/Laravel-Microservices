@@ -8,8 +8,8 @@ BEGIN TRY
     CREATE DATABASE analytics_service_db;
   IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'api_gateway_db')
     CREATE DATABASE api_gateway_db;
-  IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'auth_service_db')
-    CREATE DATABASE auth_service_db;
+  IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'jwt_service_db')
+    CREATE DATABASE jwt_service_db;
   IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'catalog_service_db')
     CREATE DATABASE catalog_service_db;
   IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'frontend_db')
@@ -97,30 +97,30 @@ BEGIN TRY
 		GRANT EXECUTE TO api_gateway_user;
 
 	--------------------------------------------------------------------------------
-	-- 3) auth-service
+	-- 3) jwt-service
 	--------------------------------------------------------------------------------
-		--CREATE DATABASE auth_service_db;
+		--CREATE DATABASE jwt_service_db;
 
-		CREATE LOGIN auth_service_user 
-		WITH PASSWORD = 'auth_service_password',
+		CREATE LOGIN jwt_service_user 
+		WITH PASSWORD = 'jwt_service_password',
 		  CHECK_POLICY = OFF,
 		  CHECK_EXPIRATION = OFF;
 
-		USE auth_service_db;
+		USE jwt_service_db;
 
-		CREATE USER auth_service_user 
-		FOR LOGIN auth_service_user;
+		CREATE USER jwt_service_user 
+		FOR LOGIN jwt_service_user;
 
-		ALTER ROLE db_datareader ADD MEMBER auth_service_user;
+		ALTER ROLE db_datareader ADD MEMBER jwt_service_user;
 
-		ALTER USER auth_service_user WITH DEFAULT_SCHEMA = dbo;
-		GRANT CREATE TABLE TO auth_service_user; 
-		GRANT ALTER ON SCHEMA::dbo TO auth_service_user; 
-		GRANT REFERENCES ON SCHEMA::dbo TO auth_service_user; 
-		GRANT VIEW DEFINITION ON SCHEMA::dbo TO auth_service_user;
-		GRANT CONTROL ON SCHEMA::dbo TO auth_service_user;
+		ALTER USER jwt_service_user WITH DEFAULT_SCHEMA = dbo;
+		GRANT CREATE TABLE TO jwt_service_user; 
+		GRANT ALTER ON SCHEMA::dbo TO jwt_service_user; 
+		GRANT REFERENCES ON SCHEMA::dbo TO jwt_service_user; 
+		GRANT VIEW DEFINITION ON SCHEMA::dbo TO jwt_service_user;
+		GRANT CONTROL ON SCHEMA::dbo TO jwt_service_user;
 
-		GRANT EXECUTE TO auth_service_user;
+		GRANT EXECUTE TO jwt_service_user;
 
 	--------------------------------------------------------------------------------
 	-- 4) catalog-service

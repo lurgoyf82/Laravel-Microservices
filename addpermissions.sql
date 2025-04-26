@@ -34,21 +34,21 @@ BEGIN TRY
 		GRANT EXECUTE TO api_gateway_user;
 
 	--------------------------------------------------------------------------------
-	-- 3) auth-service
+	-- 3) jwt-service
 	--------------------------------------------------------------------------------
 
-		USE auth_service_db;
+		USE jwt_service_db;
 
-		ALTER ROLE db_datawriter ADD MEMBER auth_service_user;
+		ALTER ROLE db_datawriter ADD MEMBER jwt_service_user;
 
-		ALTER USER auth_service_user WITH DEFAULT_SCHEMA = dbo;
-		GRANT CREATE TABLE TO auth_service_user; 
-		GRANT ALTER ON SCHEMA::dbo TO auth_service_user; 
-		GRANT REFERENCES ON SCHEMA::dbo TO auth_service_user; 
-		GRANT VIEW DEFINITION ON SCHEMA::dbo TO auth_service_user;
-		GRANT CONTROL ON SCHEMA::dbo TO auth_service_user;
+		ALTER USER jwt_service_user WITH DEFAULT_SCHEMA = dbo;
+		GRANT CREATE TABLE TO jwt_service_user; 
+		GRANT ALTER ON SCHEMA::dbo TO jwt_service_user; 
+		GRANT REFERENCES ON SCHEMA::dbo TO jwt_service_user; 
+		GRANT VIEW DEFINITION ON SCHEMA::dbo TO jwt_service_user;
+		GRANT CONTROL ON SCHEMA::dbo TO jwt_service_user;
 
-		GRANT EXECUTE TO auth_service_user;
+		GRANT EXECUTE TO jwt_service_user;
 
 	--------------------------------------------------------------------------------
 	-- 4) catalog-service

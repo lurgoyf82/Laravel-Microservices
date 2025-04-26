@@ -6,7 +6,6 @@
 /storage/*.key
 /storage/pail
 /vendor
-#.env
 .env.backup
 .env.production
 .phpactor.json
@@ -21,8 +20,3 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
-/.vs
-/.idea
-
-/public/CReposlaravel-microservicesauth-servicestorageframeworkviews
-/public/CReposlaravel-microservicesauth-servicestoragelogs

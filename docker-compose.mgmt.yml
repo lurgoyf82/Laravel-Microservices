@@ -1,0 +1,15 @@
+#C:\Repos\laravel-microservices\docker-compose.mgmt.yml
+services:
+  redis:
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  sql-server:
+    ports:
+      - "1433:1433"
+      - "1434:1434"

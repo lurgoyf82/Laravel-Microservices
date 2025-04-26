@@ -1,59 +1,112 @@
-# Stage 1: Builder
-FROM php:8.2-fpm-alpine AS build
+FROM php:8.2-apache AS build
 
-# Install system dependencies
-RUN apk add --no-cache \
-    bash \
-    git \
+# Install system dependencies and PHP extensions
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    gnupg2 \
+    apt-transport-https \
     curl \
+    lsb-release \
+    git \
+    unzip \
     libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
     libzip-dev \
-    oniguruma-dev \
+    libonig-dev \
+    libicu-dev \
+    libexif-dev \
+    pkg-config \
     zip \
-    unzip
+    libcurl4-openssl-dev \
+ && docker-php-ext-configure gd --with-freetype --with-jpeg \
+ && docker-php-ext-install \
+      pdo_mysql \
+      mbstring \
+      zip \
+      exif \
+      pcntl \
+      intl \
+      bcmath \
+      gd \
+      curl \
+ && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath gd
+# Add Microsoft repository for ODBC drivers
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+    && echo "deb [arch=amd64] https://packages.microsoft.com/debian/12/prod bookworm main" > /etc/apt/sources.list.d/mssql-release.list
 
-# Install Composer
+# Install Microsoft ODBC Driver for SQL Server
+RUN apt-get update && ACCEPT_EULA=Y apt-get install -y \
+    msodbcsql17 \
+    unixodbc-dev \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+# Install the PHP extensions for SQL Server
+RUN pecl install pdo_sqlsrv \
+    && pecl install sqlsrv \
+    && docker-php-ext-enable pdo_sqlsrv sqlsrv
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-# Set workdir
 WORKDIR /var/www/html
-
-# Copy composer files and install dependencies
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Stage 2: Production
-FROM php:8.2-fpm-alpine
+COPY . .
 
-# Create non-root user
-RUN addgroup -g 1000 appuser \
- && adduser -u 1000 -G appuser -s /bin/sh -D appuser
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-# Copy PHP extensions from build stage
-COPY --from=build /usr/local/lib/php/extensions/no-debug-non-zts-*/ /usr/local/lib/php/extensions/
+FROM php:8.2-apache
 
-# Install runtime dependencies
-RUN apk add --no-cache \
-    libpng \
-    oniguruma \
+# Install necessary libraries and PHP extensions
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    gnupg2 \
+    curl \
+    ca-certificates \
+    apt-transport-https \
+    unixodbc-dev \
     tzdata \
-    && cp /usr/share/zoneinfo/UTC /etc/localtime \
-    && echo "UTC" > /etc/timezone
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    libonig-dev \
+    libicu-dev \
+ && ln -sf /usr/share/zoneinfo/Europe/Rome /etc/localtime \
+ && echo "Europe/Rome" > /etc/timezone \
+ && docker-php-ext-configure gd --with-freetype --with-jpeg \
+ && docker-php-ext-install \
+      pdo_mysql \
+      gd \
+ && apt-get purge -y --auto-remove tzdata \
+ && rm -rf /var/lib/apt/lists/*
 
-# Set workdir
-WORKDIR /var/www/html
+RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft.gpg
+RUN echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/debian/12/prod bookworm main" > /etc/apt/sources.list.d/mssql-release.list
+RUN apt-get update && ACCEPT_EULA=Y apt-get install -y --no-install-recommends msodbcsql18 && rm -rf /var/lib/apt/lists/*
 
-# Copy application code
-COPY --chown=appuser:appuser --from=build /var/www/html /var/www/html
 
-# Switch to non-root user
-USER appuser
+COPY --from=build /usr/local/lib/php/extensions /usr/local/lib/php/extensions
+COPY --from=build /usr/local/etc/php/conf.d    /usr/local/etc/php/conf.d
 
-# Expose PHP-FPM socket (not port)
+# Enable Apache modules
+RUN a2enmod rewrite headers proxy proxy_http
+
+# Set ServerName to suppress Apache warning
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+# Copy application files from the build stage
+COPY --from=build /var/www/html /var/www/html
+COPY vhost.conf /etc/apache2/sites-available/000-default.conf
+#COPY php.ini /usr/local/etc/php/php.ini
+#COPY /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
+
+RUN chown -R www-data:www-data /var/www/html
+
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+# Expose port and set the default command
 EXPOSE 80
-
-# Entrypoint
-CMD ["php-fpm"]
+CMD ["apache2-foreground"]

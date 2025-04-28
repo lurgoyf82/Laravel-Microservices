@@ -9,12 +9,4 @@
 /order-service/.env
 /payment-service/.env
 /user-service/.env
-/analytics-service/.env
-/api-gateway/.env
-/auth-service/.env
-/catalog-service/.env
-/jwt-service/.env
-/notification-service/.env
-/order-service/.env
-/payment-service/.env
-/user-service/.env
+

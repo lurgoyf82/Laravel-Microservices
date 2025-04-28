@@ -7,7 +7,7 @@ services:
     container_name: user-service                        # nome fisso del container
     env_file: user-service/.env                       # carica variabili (DB, app key, ecc.) dal file .env locale
     ports:
-      - "8002:80"
+      - "8003:80"
     volumes:
       - ./user-service:/var/www/html                               # bind-mount del sorgente: ogni modifica locale si vede subito nel container
     depends_on:                                         # ordine di avvio (non health-check)

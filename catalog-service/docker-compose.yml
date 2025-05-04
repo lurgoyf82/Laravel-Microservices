@@ -7,7 +7,7 @@ services:
     container_name: catalog-service                     # nome fisso del container
     env_file: catalog-service/.env                    # carica variabili (DB, app key, ecc.) dal file .env locale
     ports:
-      - "8003:80"
+      - "8004:80"
     volumes:
       - ./catalog-service:/var/www/html                       # bind-mount del sorgente: ogni modifica locale si vede subito nel container
     depends_on:                                         # ordine di avvio (non health-check)

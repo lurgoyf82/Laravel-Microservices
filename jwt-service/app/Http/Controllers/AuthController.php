@@ -2,58 +2,91 @@
 
     namespace App\Http\Controllers;
 
-    use App\Services\JwtService;
-    use App\Repositories\RefreshTokenRepository;
     use Illuminate\Http\Request;
-    use Illuminate\Http\JsonResponse;
+    use App\Models\User;
+    use Illuminate\Support\Facades\Hash;
+    use Illuminate\Support\Facades\Auth;
+    use Tymon\JWTAuth\Facades\JWTAuth;
+    use Tymon\JWTAuth\Exceptions\JWTException;
 
     class AuthController extends Controller
     {
-        public function __construct(
-            protected JwtService $jwt,
-            protected RefreshTokenRepository $rtRepo
-        ) {}
-
-        public function login(Request $req): JsonResponse
+        public function register(Request $request)
         {
-            $req->validate(['email'=>'required|email','password'=>'required']);
-            // authenticate against your user-service (e.g. HTTP call or DB)
-            $user = /* … */;
-            if (! $user) {
-                return response()->json(['error'=>'Invalid credentials'], 401);
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:6|confirmed',
+            ]);
+
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+
+            try {
+                $token = JWTAuth::fromUser($user);
+            } catch (JWTException $e) {
+                return response()->json(['error' => 'Could not create token'], 500);
             }
 
-            $accessToken = $this->jwt->issueAccessToken($user->id, ['email'=>$user->email]);
-            $refresh     = $this->rtRepo->create($user->id, config('jwt.refresh_ttl'));
+            return response()->json([
+                'token' => $token,
+                'user' => $user,
+            ], 201);
+        }
+
+        public function login(Request $request)
+        {
+            $credentials = $request->only('email', 'password');
+
+            try {
+                if (!$token = JWTAuth::attempt($credentials)) {
+                    return response()->json(['error' => 'Invalid credentials'], 401);
+                }
+            } catch (JWTException $e) {
+                return response()->json(['error' => 'Could not create token'], 500);
+            }
 
             return response()->json([
-                'access_token'  => $accessToken,
-                'token_type'    => 'Bearer',
-                'expires_in'    => config('jwt.access_ttl'),
-                'refresh_token'=> $refresh->token,
+                'token' => $token,
+                'expires_in' => auth('api')->factory()->getTTL() * 60,
             ]);
         }
 
-        public function refresh(Request $req): JsonResponse
+        public function logout()
         {
-            $req->validate(['refresh_token'=>'required']);
-            $stored = $this->rtRepo->findValid($req->refresh_token);
-            if (! $stored) {
-                return response()->json(['error'=>'Invalid or expired refresh token'], 401);
+            try {
+                JWTAuth::invalidate(JWTAuth::getToken());
+            } catch (JWTException $e) {
+                return response()->json(['error' => 'Failed to logout, please try again'], 500);
             }
 
-            // revoke old
-            $this->rtRepo->revoke($stored);
+            return response()->json(['message' => 'Successfully logged out']);
+        }
 
-            // issue new
-            $newAccess  = $this->jwt->issueAccessToken($stored->user_id);
-            $newRefresh = $this->rtRepo->create($stored->user_id, config('jwt.refresh_ttl'));
+        public function getUser()
+        {
+            try {
+                $user = Auth::user();
+                if (!$user) {
+                    return response()->json(['error' => 'User not found'], 404);
+                }
+                return response()->json($user);
+            } catch (JWTException $e) {
+                return response()->json(['error' => 'Failed to fetch user profile'], 500);
+            }
+        }
 
-            return response()->json([
-                'access_token'  => $newAccess,
-                'token_type'    => 'Bearer',
-                'expires_in'    => config('jwt.access_ttl'),
-                'refresh_token'=> $newRefresh->token,
-            ]);
+        public function updateUser(Request $request)
+        {
+            try {
+                $user = Auth::user();
+                $user->update($request->only(['name', 'email']));
+                return response()->json($user);
+            } catch (JWTException $e) {
+                return response()->json(['error' => 'Failed to update user'], 500);
+            }
         }
     }

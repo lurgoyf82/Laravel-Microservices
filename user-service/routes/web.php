@@ -8,3 +8,9 @@ die();
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::prefix('api')
+     ->middleware('api')
+     ->group(base_path('routes/api.php'));
+

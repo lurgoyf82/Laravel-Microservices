@@ -3,71 +3,67 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class GatewayController extends Controller
 {
-    /**
-     * Instrada qualsiasi richiesta verso il microservizio interno.
-     * Il prefisso URL definisce il servizio target.
-     * Esempio: GET /api/catalog/products -> catalog-service
-     */
-    public function proxy_old(Request $request, string $service)
+    public function proxy(Request $request, string $path = ''): Response
     {
-        // Recupera configurazione endpoint interno
-        $baseUrl = config("gateway.services.{$service}");
-        if (! $baseUrl) {
-            return new JsonResponse(['error' => 'Servizio non trovato'], 404);
+        $route    = $request->attributes->get('gateway_route');
+        $baseUrl  = rtrim($route['target_service_url'], '/');
+        $url      = $baseUrl . '/' . $path;
+
+        // Header da inoltrare (white-list)
+        $allowed        = ['Accept', 'Content-Type', 'Authorization', 'X-Request-ID', 'User-Agent'];
+        $forwardHeaders = [];
+        foreach ($request->headers->all() as $key => $values) {
+            $name = implode('-', array_map('ucfirst', explode('-', $key)));
+            if (in_array($name, $allowed)) {
+                $forwardHeaders[$name] = implode(', ', $values);
+            }
         }
 
-        // Costruisci URL target
-        $url = rtrim($baseUrl, '/') . '/' . ltrim($request->path(), "$service/");
-
-        // Forward headers (incluso Authorization)
-        $response = Http::withHeaders([
-            'Authorization' => $request->header('Authorization'),
-            'Accept'        => 'application/json',
-        ])
-        ->send($request->method(), $url, ['json' => $request->all(), 'query' => $request->query()]);
-
-        return new JsonResponse($response->json(), $response->status());
-    }
-
-    public function proxy(Request $request, string $service)
-    {
-        $baseUrl = config("gateway.services.{$service}");
-        if (! $baseUrl) {
-            return response()->json(['error' => 'Servizio non trovato'], 404);
+        // Caching per GET
+        $cacheTtl = (int) $route['cache_ttl'];
+        $cacheKey = 'gateway|' . md5($request->fullUrl());
+        if ($request->isMethod('get') && $cacheTtl > 0) {
+            if ($cached = Cache::store('redis')->get($cacheKey)) {
+                return response($cached['body'], $cached['status'])
+                    ->withHeaders($cached['headers']);
+            }
         }
 
-        // se nella route hai usato ->where('path','.*') e ->defaults('service',...)
-        $path = $request->route('path', '');
+        try {
+            $response = Http::withHeaders($forwardHeaders)
+                ->withBody($request->getContent(), $request->header('Content-Type', 'application/json'))
+                ->send($request->method(), $url, [
+                    'query' => $request->query(),
+                ]);
 
-        $url = rtrim($baseUrl, '/') . '/' . ltrim($path, '/');
+            $body       = $response->body();
+            $status     = $response->status();
+            $respHeaders = collect($response->headers())
+                ->except(['transfer-encoding', 'connection'])
+                ->toArray();
 
-        // forward di tutti gli header tranne quelli Hop-by-Hop
-        $forwardHeaders = collect($request->headers->all())
-            ->except([
-                'host', 'connection', 'content-length',
-                'accept-encoding', 'keep-alive', 'transfer-encoding'
-            ])->mapWithKeys(fn($v,$k) => [$k => implode(';', $v)])
-            ->toArray();
+            // salva in cache se GET
+            if ($request->isMethod('get') && $cacheTtl > 0) {
+                Cache::store('redis')->put($cacheKey, [
+                    'body'    => $body,
+                    'status'  => $status,
+                    'headers' => $respHeaders
+                ], $cacheTtl);
+            }
 
-        $response = Http::withHeaders($forwardHeaders)
-            ->withBody(
-                $request->getContent(),
-                $request->header('Content-Type') ?? 'application/json'
-            )
-            ->send($request->method(), $url, [
-                'query' => $request->query(),
-            ]);
+            return response($body, $status)->withHeaders($respHeaders);
 
-        // prepara la risposta con status, body e headers originali
-        return response($response->body(), $response->status())
-            ->withHeaders(collect($response->headers())
-                ->except(['transfer-encoding', 'connection'])->toArray()
-            );
+        } catch (\Exception $e) {
+            Log::error('Gateway proxy error', ['url' => $url, 'error' => $e->getMessage()]);
+            return response()->json(['error' => 'Service Unavailable'], 503);
+        }
     }
-
 }
+

@@ -1,9 +1,18 @@
-[
+<?php return [
     {
         "id": "analytics_service",
         "path_pattern": "^analytics\\/?(.*)$",
-        "target_service_url": "http://product-service:8007",
+        "target_service_url": "http://product-service:80",
         "cache_ttl": 3600,
+        "is_active": true,
+        "auth_required": false,
+        "rate_limit": 60
+    },
+    {
+        "id": "user_service",
+        "path_pattern": "^user\\$",
+        "target_service_url": "http://user-service:80",
+        "cache_ttl": 0,
         "is_active": true,
         "auth_required": false,
         "rate_limit": 60
@@ -11,7 +20,7 @@
     {
         "id": "catalog_service",
         "path_pattern": "^catalog\\/?(.*)$",
-        "target_service_url": "http://product-service:8003",
+        "target_service_url": "http://product-service:80",
         "cache_ttl": 3600,
         "is_active": true,
         "auth_required": false,
@@ -20,7 +29,7 @@
     {
         "id": "jwt_service",
         "path_pattern": "^jwt\\/?(.*)$",
-        "target_service_url": "http://product-service:8001",
+        "target_service_url": "http://product-service:80",
         "cache_ttl": 3600,
         "is_active": true,
         "auth_required": false,
@@ -29,7 +38,7 @@
     {
         "id": "notification_service",
         "path_pattern": "^notification\\/?(.*)$",
-        "target_service_url": "http://product-service:8006",
+        "target_service_url": "http://product-service:80",
         "cache_ttl": 3600,
         "is_active": true,
         "auth_required": false,
@@ -38,7 +47,7 @@
     {
         "id": "order_service",
         "path_pattern": "^order\\/?(.*)$",
-        "target_service_url": "http://product-service:8004",
+        "target_service_url": "http://product-service:80",
         "cache_ttl": 3600,
         "is_active": true,
         "auth_required": false,
@@ -47,7 +56,7 @@
     {
         "id": "payment_service",
         "path_pattern": "^payment\\/?(.*)$",
-        "target_service_url": "http://product-service:8005",
+        "target_service_url": "http://product-service:80",
         "cache_ttl": 3600,
         "is_active": true,
         "auth_required": false,
@@ -56,7 +65,7 @@
     {
         "id": "user_service",
         "path_pattern": "^user\\/?(.*)$",
-        "target_service_url": "http://product-service:8002",
+        "target_service_url": "http://product-service:80",
         "cache_ttl": 3600,
         "is_active": true,
         "auth_required": false,

@@ -1,75 +1,74 @@
 <?php
+    /**
+     * config/gateway_routes.php
+     *
+     * Keyed by the {service} route parameter.
+     */
+
     return [
-    [
-        'id' => 'analytics_service',
-        'path_pattern' => '^analytics(/.*)?$',
-        'target_service_url' => 'http://analytics-service:80',
-        'cache_ttl' => 3600,
-        'is_active' => true,
-        'auth_required' => false,
-        'rate_limit' => 60
-    ],
-    [
-        'id' => 'auth_service',
-        'path_pattern' => '^auth(/.*)?$',
-        'target_service_url' => 'http://auth-service:80',
-        'cache_ttl' => 0,
-        'is_active' => true,
-        'auth_required' => false,
-        'rate_limit' => 60
-    ],
-    [
-        'id' => 'catalog_service',
-        'path_pattern' => '^catalog(/.*)?$',
-        'target_service_url' => 'http://catalog-service:80',
-        'cache_ttl' => 3600,
-        'is_active' => true,
-        'auth_required' => false,
-        'rate_limit' => 60
-    ],
-    [
-        'id' => 'jwt_service',
-        'path_pattern' => '^jwt(/.*)?$',
-        'target_service_url' => 'http://jwt-service:80',
-        'cache_ttl' => 3600,
-        'is_active' => true,
-        'auth_required' => false,
-        'rate_limit' => 60
-    ],
-    [
-        'id' => 'notification_service',
-        'path_pattern' => '^notification(/.*)?$',
-        'target_service_url' => 'http://notification-service:80',
-        'cache_ttl' => 3600,
-        'is_active' => true,
-        'auth_required' => false,
-        'rate_limit' => 60
-    ],
-    [
-        'id' => 'order_service',
-        'path_pattern' => '^order(/.*)?$',
-        'target_service_url' => 'http://order-service:80',
-        'cache_ttl' => 3600,
-        'is_active' => true,
-        'auth_required' => false,
-        'rate_limit' => 60
-    ],
-    [
-        'id' => 'payment_service',
-        'path_pattern' => '^payment(/.*)?$',
-        'target_service_url' => 'http://payment-service:80',
-        'cache_ttl' => 3600,
-        'is_active' => true,
-        'auth_required' => false,
-        'rate_limit' => 60
-    ],
-    [
-        'id' => 'user_service',
-        'path_pattern' => '^user(?:/.*)?$',
-        'target_service_url' => 'http://user-service:80',
-        'cache_ttl' => 3600,
-        'is_active' => true,
-        'auth_required' => false,
-        'rate_limit' => 60
-    ]
-];
+
+        // Analytics
+        'analytics' => [
+            'url'       => 'http://analytics-service:80/api',
+            'cache_ttl'    => 3600,
+            'auth'         => false,
+            'rate_limit'   => 60,
+        ],
+
+        // Auth
+        'auth' => [
+            'url'       => 'http://auth-service:80/api',
+            'cache_ttl'    => 0,
+            'auth'         => false,
+            'rate_limit'   => 60,
+        ],
+
+        // Catalog
+        'catalog' => [
+            'url'       => 'http://catalog-service:80/api',
+            'cache_ttl'    => 3600,
+            'auth'         => false,
+            'rate_limit'   => 60,
+        ],
+
+        // JWT
+        'jwt' => [
+            'url'       => 'http://jwt-service:80/api',
+            'cache_ttl'    => 3600,
+            'auth'         => false,
+            'rate_limit'   => 60,
+        ],
+
+        // Notification
+        'notification' => [
+            'url'       => 'http://notification-service:80/api',
+            'cache_ttl'    => 3600,
+            'auth'         => false,
+            'rate_limit'   => 60,
+        ],
+
+        // Order (requires auth)
+        'order' => [
+            'url'       => 'http://order-service:80/api',
+            'cache_ttl'    => 0,
+            'auth'         => true,
+            'rate_limit'   => 60,
+        ],
+
+        // Payment (requires auth)
+        'payment' => [
+            'url'       => 'http://payment-service:80/api',
+            'cache_ttl'    => 0,
+            'auth'         => true,
+            'rate_limit'   => 60,
+        ],
+
+        // Users (caching reads, requires auth)
+        'users' => [
+            'url'       => 'http://user-service:80/api',
+            'cache_ttl'    => 300,
+            'auth'         => false,
+            'rate_limit'   => 100,
+        ],
+
+    ];

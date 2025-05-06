@@ -1,33 +1,38 @@
 <?php
 
-namespace App\Services;
+    namespace App\Services;
 
-use Illuminate\Support\Facades\Log;
+    use Illuminate\Support\Arr;
+    use Illuminate\Support\Facades\Log;
 
-class GatewayConfigService
-{
-    protected array $routes;
-
-    public function __construct()
+    class GatewayConfigService
     {
-        $this->loadConfig();
-    }
+        protected array $routes;
 
-    protected function loadConfig(): void
-    {
-        $this->routes = require config_path('gateway_routes.php');
-    }
-
-    public function matchRoute(string $uri): ?array
-    {
-        foreach ($this->routes as $route) {
-            if (!$route['is_active']) {
-                continue;
-            }
-            if (preg_match('#' . $route['path_pattern'] . '#', ltrim($uri, '/'), $matches)) {
-                return array_merge($route, ['matches' => $matches]);
-            }
+        public function __construct()
+        {
+            $this->routes = config('gateway_routes', []);
         }
-        return null;
+
+        /**
+         * @param  string  $service  the {service} route parameter
+         * @return array<string,mixed>|null
+         */
+        public function getRoute(string $service): ?array
+        {
+            if (! isset($this->routes[$service])) {
+                Log::warning("Gateway route not configured for service [{$service}]");
+                return null;
+            }
+
+            $route = $this->routes[$service];
+
+            // Validate minimal keys
+            if (! Arr::has($route, ['target','cache_ttl','auth','rate_limit'])) {
+                Log::error("Malformed gateway config for service [{$service}]");
+                return null;
+            }
+
+            return $route;
+        }
     }
-}

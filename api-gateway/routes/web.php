@@ -30,30 +30,30 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::any('/auth-service/{any?}', function(Request $request, $any = '') {
-    // 1) L'URL interno: il service name "auth-service" + porta 80 interna
-    $internalUrl = 'http://auth-service/' . ltrim($any, '/');
-
-    // 2) Raccolgo headers (escludo host e forwarding)
-    $headers = collect($request->headers->all())
-        ->except(['host', 'x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto'])
-        ->map(fn($v, $k) => [$k => $v[0]])
-        ->collapse()
-        ->toArray();
-
-    // 3) Preparo le opzioni: headers, query string e body
-    $options = [
-        'headers' => $headers,
-        'query'   => $request->query(),
-        'body'    => $request->getContent(),
-        'verify'  => false,  // disabilita SSL verify se serve
-    ];
-
-    // 4) Inoltro la richiesta con lo stesso metodo HTTP
-    $response = Http::send($request->method(), $internalUrl, $options);
-
-    // 5) Ritorno al client lo stesso status, body e header ricevuti
-    return response($response->body(), $response->status())
-           ->withHeaders($response->headers());
-})
-->where('any', '.*');
+//Route::any('/auth-service/{any?}', function(Request $request, $any = '') {
+//    // 1) L'URL interno: il service name "auth-service" + porta 80 interna
+//    $internalUrl = 'http://auth-service/' . ltrim($any, '/');
+//
+//    // 2) Raccolgo headers (escludo host e forwarding)
+//    $headers = collect($request->headers->all())
+//        ->except(['host', 'x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto'])
+//        ->map(fn($v, $k) => [$k => $v[0]])
+//        ->collapse()
+//        ->toArray();
+//
+//    // 3) Preparo le opzioni: headers, query string e body
+//    $options = [
+//        'headers' => $headers,
+//        'query'   => $request->query(),
+//        'body'    => $request->getContent(),
+//        'verify'  => false,  // disabilita SSL verify se serve
+//    ];
+//
+//    // 4) Inoltro la richiesta con lo stesso metodo HTTP
+//    $response = Http::send($request->method(), $internalUrl, $options);
+//
+//    // 5) Ritorno al client lo stesso status, body e header ricevuti
+//    return response($response->body(), $response->status())
+//           ->withHeaders($response->headers());
+//})
+//->where('any', '.*');

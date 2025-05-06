@@ -1,69 +1,64 @@
 <?php
 
-namespace App\Http\Controllers;
+    namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-use Symfony\Component\HttpFoundation\Response;
+    use Illuminate\Http\Request;
+    use Illuminate\Support\Facades\Cache;
+    use Illuminate\Support\Facades\Http;
+    use Illuminate\Support\Facades\Log;
+    use Symfony\Component\HttpFoundation\Response;
 
-class GatewayController extends Controller
-{
-    public function proxy(Request $request, string $path = ''): Response
+    class GatewayController extends Controller
     {
-        $route    = $request->attributes->get('gateway_route');
-        $baseUrl  = rtrim($route['target_service_url'], '/');
-        $url      = $baseUrl . '/' . $path;
-
-        // Header da inoltrare (white-list)
-        $allowed        = ['Accept', 'Content-Type', 'Authorization', 'X-Request-ID', 'User-Agent'];
-        $forwardHeaders = [];
-        foreach ($request->headers->all() as $key => $values) {
-            $name = implode('-', array_map('ucfirst', explode('-', $key)));
-            if (in_array($name, $allowed)) {
-                $forwardHeaders[$name] = implode(', ', $values);
-            }
+        protected $gateway_routes;
+        public function __construct()
+        {
+            // 1) Middleware to validate and extract config
+            $this->gateway_routes = require config_path('gateway_routes.php');
         }
 
-        // Caching per GET
-        $cacheTtl = (int) $route['cache_ttl'];
-        $cacheKey = 'gateway|' . md5($request->fullUrl());
-        if ($request->isMethod('get') && $cacheTtl > 0) {
-            if ($cached = Cache::store('redis')->get($cacheKey)) {
-                return response($cached['body'], $cached['status'])
-                    ->withHeaders($cached['headers']);
+        public function proxy(Request $request, string $version, string $service=null, string $parameters = null) {
+            // 4) Build target URL
+            $route = false;
+            if (array_key_exists($service, $this->gateway_routes)) {
+                $route = $this->gateway_routes[$service];
             }
-        }
+            if (!$route) {
+                return response()->json(['error' => 'Service not found'], Response::HTTP_NOT_FOUND);
+            }
 
-        try {
-            $response = Http::withHeaders($forwardHeaders)
-                ->withBody($request->getContent(), $request->header('Content-Type', 'application/json'))
+            // 5) Build target URL
+
+            if ($parameters) {
+                $url = $route['url'] . '/' .$version . '/' . $parameters;
+            } else {
+                $url = $route['url'] . '/' .$version;
+            }
+
+            // 6) Cache
+
+            // 7) Auth
+
+            // 8) Rate limit
+
+            dd('ahio');
+            // 9) Forward request
+            $response = Http::withHeaders($request->headers->all())
                 ->send($request->method(), $url, [
                     'query' => $request->query(),
+                    'body' => $request->getContent(),
                 ]);
 
-            $body       = $response->body();
-            $status     = $response->status();
-            $respHeaders = collect($response->headers())
-                ->except(['transfer-encoding', 'connection'])
-                ->toArray();
-
-            // salva in cache se GET
-            if ($request->isMethod('get') && $cacheTtl > 0) {
-                Cache::store('redis')->put($cacheKey, [
-                    'body'    => $body,
-                    'status'  => $status,
-                    'headers' => $respHeaders
-                ], $cacheTtl);
+            /*
+            // 10) Return response
+            if (!$response || !$response->successful()) {
+                return response()->json(['error' => 'Failed to forward request'], Response::HTTP_BAD_GATEWAY);
             }
+            */
 
-            return response($body, $status)->withHeaders($respHeaders);
+            return response($response->body(), $response->status())
+                ->withHeaders($response->headers());
 
-        } catch (\Exception $e) {
-            Log::error('Gateway proxy error', ['url' => $url, 'error' => $e->getMessage()]);
-            return response()->json(['error' => 'Service Unavailable'], 503);
+
         }
     }
-}
-

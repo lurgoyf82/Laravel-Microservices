@@ -6,6 +6,7 @@
     use Illuminate\Support\Facades\Cache;
     use Illuminate\Support\Facades\Http;
     use Illuminate\Support\Facades\Log;
+    use Illuminate\Support\Facades\RateLimiter;
     use Symfony\Component\HttpFoundation\Response;
 
     class GatewayController extends Controller
@@ -28,20 +29,38 @@
             }
 
             // 5) Build target URL
-
+            $url  = $route['url']."/{$service}/{$version}";
             if ($parameters) {
-                $url = $route['url'] . '/' .$version . '/' . $parameters;
-            } else {
-                $url = $route['url'] . '/' .$version;
+                $url .= "/{$parameters}";
             }
 
-            // 6) Cache
+            // 6) Rate limit
+            $key = $service.'|'.$request->ip();
+            if (RateLimiter::tooManyAttempts($key, (int)$route['rate_limit'])) {
+                return response()->json(['error' => 'Too Many Requests'], Response::HTTP_TOO_MANY_REQUESTS);
+            }
+            RateLimiter::hit($key);
 
             // 7) Auth
+            if ($route['auth'] && !$request->bearerToken()) {
+                return response()->json(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+            }
 
-            // 8) Rate limit
+            // 8) Cache
 
-            dd('ahio');
+            //the service name, the version and the parameters should be json encoded and then hashed into a single unique key
+            //also are the user and the authorizations and authentications important to the cache ?
+
+
+            if ($route['cache_ttl'] > 0) {
+                $cache_key = md5('gateway_'.json_encode($service, $version, $parameters));
+                $cached_response = Cache::get($cache_key);
+                if ($cached_response) {
+                    return response($cached_response->body(), $cached_response->status())
+                        ->withHeaders($cached_response->headers());
+                }
+            }
+
             // 9) Forward request
             $response = Http::withHeaders($request->headers->all())
                 ->send($request->method(), $url, [

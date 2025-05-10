@@ -53,6 +53,24 @@
             'cache_ttl'    => 0,
             'auth'         => true,
             'rate_limit'   => 60,
+
+
+            /*
+        'order' => [
+            'url'       => 'http://order-service:80/api',
+    cache:
+      enabled: true
+      ttl: 300          # seconds; 0 = bypass
+      vary:
+        headers: ["Accept-Language"]
+        query:   ["*"]  # canonicalised order
+        body:    false  # only allow GET caching
+    auth:
+      required:  true   # verify signature
+      per_user:  true   # key contains user id
+      per_scope: false  # add role list only if data differs by role
+    rate_limit: 60      # rpm
+             * */
         ],
 
         // Payment (requires auth)

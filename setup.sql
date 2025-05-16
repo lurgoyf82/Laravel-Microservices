@@ -1,39 +1,26 @@
 --------------------------------------------------------------------------------
 -- 0) Ensure all databases exist
 --------------------------------------------------------------------------------
-BEGIN TRY
-  BEGIN TRANSACTION;
-
-  IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'analytics_service_db')
-    CREATE DATABASE analytics_service_db;
-  IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'api_gateway_db')
-    CREATE DATABASE api_gateway_db;
-  IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'jwt_service_db')
-    CREATE DATABASE jwt_service_db;
-  IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'catalog_service_db')
-    CREATE DATABASE catalog_service_db;
-  IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'frontend_db')
-    CREATE DATABASE frontend_db;
-  IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'notification_service_db')
-    CREATE DATABASE notification_service_db;
-  IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'order_service_db')
-    CREATE DATABASE order_service_db;
-  IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'payment_service_db')
-    CREATE DATABASE payment_service_db;
-  IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'user_service_db')
-    CREATE DATABASE user_service_db;
-
-  COMMIT TRANSACTION;
-END TRY
-BEGIN CATCH
-  IF @@TRANCOUNT > 0
-    ROLLBACK TRANSACTION;
-
-  DECLARE @ErrMsg NVARCHAR(4000) = ERROR_MESSAGE();
-  DECLARE @ErrSev INT      = ERROR_SEVERITY();
-  RAISERROR (@ErrMsg, @ErrSev, 1);
-END CATCH;
+IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'analytics_service_db')
+  CREATE DATABASE analytics_service_db;
+IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'api_gateway_db')
+  CREATE DATABASE api_gateway_db;
+IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'jwt_service_db')
+  CREATE DATABASE jwt_service_db;
+IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'catalog_service_db')
+  CREATE DATABASE catalog_service_db;
+IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'frontend_db')
+  CREATE DATABASE frontend_db;
+IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'notification_service_db')
+  CREATE DATABASE notification_service_db;
+IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'order_service_db')
+  CREATE DATABASE order_service_db;
+IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'payment_service_db')
+  CREATE DATABASE payment_service_db;
+IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'user_service_db')
+  CREATE DATABASE user_service_db;
 GO
+
 
 BEGIN TRY
   BEGIN TRANSACTION;

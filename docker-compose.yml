@@ -69,7 +69,7 @@ networks:
   # # redis <-> each service
   # net-redis-analytics-service:           { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.101.0/24" } ] } }
   # net-redis-api-gateway:                 { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.102.0/24" } ] } }
-  # net-redis-jwt-service:                { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.103.0/24" } ] } }
+  # net-redis-jwt-service:                 { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.103.0/24" } ] } }
   # net-redis-catalog-service:             { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.104.0/24" } ] } }
   # #net-redis-frontend:                   { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.105.0/24" } ] } }
   # net-redis-notification-service:        { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.106.0/24" } ] } }
@@ -79,7 +79,7 @@ networks:
 
   # # rabbitmq <-> each service            
   # net-rabbitmq-analytics-service:        { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.111.0/24" } ] } }
-  # net-rabbitmq-jwt-service:             { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.112.0/24" } ] } }
+  # net-rabbitmq-jwt-service:              { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.112.0/24" } ] } }
   # net-rabbitmq-catalog-service:          { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.113.0/24" } ] } }
   # #net-rabbitmq-frontend:                { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.114.0/24" } ] } }
   # net-rabbitmq-notification-service:     { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.115.0/24" } ] } }
@@ -89,7 +89,7 @@ networks:
   
   # # sql-server <-> each service          
   # net-sql-server-analytics-service:      { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.121.0/24" } ] } }
-  # net-sql-server-jwt-service:           { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.122.0/24" } ] } }
+  # net-sql-server-jwt-service:            { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.122.0/24" } ] } }
   # net-sql-server-catalog-service:        { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.123.0/24" } ] } }
   # net-sql-server-notification-service:   { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.124.0/24" } ] } }
   # net-sql-server-order-service:          { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.125.0/24" } ] } }
@@ -98,7 +98,7 @@ networks:
 
   # # api-gateway <-> each service
   # net-api-gateway-analytics-service:     { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.131.0/24" } ] } }
-  # net-api-gateway-jwt-service:          { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.132.0/24" } ] } }
+  # net-api-gateway-jwt-service:           { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.132.0/24" } ] } }
   # net-api-gateway-catalog-service:       { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.133.0/24" } ] } }
   # #net-api-gateway-frontend:             { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.134.0/24" } ] } }
   # net-api-gateway-notification-service:  { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.135.0/24" } ] } }

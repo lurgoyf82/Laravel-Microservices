@@ -152,6 +152,23 @@ BEGIN TRY
 
 		GRANT EXECUTE TO user_service_user;
 
+	--------------------------------------------------------------------------------
+	-- 10) auth-service
+	--------------------------------------------------------------------------------
+
+		USE auth_service_db;
+
+		ALTER ROLE db_datawriter ADD MEMBER auth_service_user;
+
+		ALTER USER auth_service_user WITH DEFAULT_SCHEMA = dbo;
+		GRANT CREATE TABLE TO auth_service_user; 
+		GRANT ALTER ON SCHEMA::dbo TO auth_service_user; 
+		GRANT REFERENCES ON SCHEMA::dbo TO auth_service_user; 
+		GRANT VIEW DEFINITION ON SCHEMA::dbo TO auth_service_user;
+		GRANT CONTROL ON SCHEMA::dbo TO auth_service_user;
+
+		GRANT EXECUTE TO auth_service_user;
+
 		
     COMMIT TRANSACTION;
   END TRY

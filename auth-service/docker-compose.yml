@@ -1,28 +1,13 @@
-#C:\Repos\Laravel-Microservices\auth-service\docker-compose.yml
 services:
-  auth-service:                                    # servizio Laravel “auth-service”
-    build:                                              # builda un’immagine partendo dal Dockerfile in questa cartella
-      context: ./auth-service
-      dockerfile: Dockerfile
-    container_name: auth-service                   # nome fisso del container
-    env_file: auth-service/.env                      # carica variabili (DB, app key, ecc.) dal file .env locale
+  auth-service:
+    image: quay.io/keycloak/keycloak:24.0.1
+    container_name: auth-service
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
-      - "8001:80"
-    volumes:
-      - ./auth-service:/var/www/html                             # bind-mount del sorgente: ogni modifica locale si vede subito nel container
-    depends_on:                                         # ordine di avvio (non health-check)
-      - sql-server                                    
-      - redis
-      - rabbitmq
+      - "8001:8080"
     networks:
       - internal
-      # - net-api-gateway-auth-service
-      # - net-rabbitmq-auth-service
-      # - net-redis-auth-service
-      # - net-sql-server-auth-service                # rete verso il gruppo SQL Server 1
-
-# networks:
-#   net-api-gateway-auth-service: { external: true }
-#   net-rabbitmq-auth-service:    { external: true }
-#   net-redis-auth-service:       { external: true }
-#   net-sql-server-auth-service:  { external: true }
+    restart: unless-stopped

@@ -1,40 +1,17 @@
-#C:\Repos\Laravel-Microservices\api-gateway\docker-compose.yml
 services:
   api-gateway:
-    build:
-      context: ./api-gateway
-      dockerfile: Dockerfile
-    env_file: api-gateway/.env
+    image: kong:3.6
     container_name: api-gateway
-    restart: unless-stopped
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
     volumes:
-      - ./api-gateway:/var/www/html
+      - ./kong.yml:/usr/local/kong/declarative/kong.yml
     ports:
-      - "8000:80"
-      - "8443:443"
+      - "8000:8000"
+      - "8443:8443"
+      - "8001:8001"
+      - "8444:8444"
     networks:
       - internal
-      # - net-api-gateway-analytics-service
-      # - net-api-gateway-auth-service
-      # - net-api-gateway-catalog-service
-      # #- net-api-gateway-frontend
-      # - net-api-gateway-notification-service
-      # - net-api-gateway-order-service
-      # - net-api-gateway-payment-service
-      # - net-api-gateway-user-service
-      # - net-redis-api-gateway
-    depends_on:
-      - redis
-    
-# networks:
-#   net-api-gateway-analytics-service:        { external: true }
-#   net-api-gateway-auth-service:             { external: true }
-#   net-api-gateway-catalog-service:          { external: true }
-#   #net-api-gateway-frontend:                 { external: true }
-#   net-api-gateway-notification-service:     { external: true }
-#   net-api-gateway-order-service:            { external: true }
-#   net-api-gateway-payment-service:          { external: true }
-#   net-api-gateway-user-service:             { external: true }
-#   net-redis-api-gateway:                    { external: true }
-    
-
+    restart: unless-stopped

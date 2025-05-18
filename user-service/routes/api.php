@@ -8,8 +8,4 @@
     });
 
     Route::post('/register', [UserController::class, 'register']);
-    Route::get('/register', [UserController::class, 'cacchio']);
     Route::post('/login', [UserController::class, 'login']);
-    Route::delete('users/{id?}', [UserController::class, 'cacchio']);
-    Route::get('users/{id?}', [UserController::class, 'cacchio']);
-    Route::post('users/{id?}', [UserController::class, 'cacchio']);

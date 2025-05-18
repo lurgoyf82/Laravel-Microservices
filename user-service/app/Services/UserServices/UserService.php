@@ -3,19 +3,31 @@
 
     use App\DTO\Requests\UserRequest\RequestInsertUserDto;
     use App\Models\User;
+    use Illuminate\Support\Facades\Hash;
 
-    class UserService
+class UserService
+{
+    public function createUser(RequestInsertUserDto $userDTO): User
     {
-        public function createUser(RequestInsertUserDto $userDTO): User
-        {
-            $user = new User();
+        $user = new User();
 
-            $user->name = $userDTO->name;
-            $user->email = $userDTO->email;
-            $user->password = $userDTO->password;
+        $user->name = $userDTO->name;
+        $user->email = $userDTO->email;
+        $user->password = $userDTO->password;
 
-            $user->save();
+        $user->save();
 
-            return $user;
-        }
+        return $user;
     }
+
+    public function login(RequestInsertUserDto $userDTO): ?User
+    {
+        $user = User::where('email', $userDTO->email)->first();
+
+        if (! $user || ! Hash::check($userDTO->password, $user->password)) {
+            return null;
+        }
+
+        return $user;
+    }
+}

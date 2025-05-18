@@ -2,6 +2,7 @@
     namespace App\Http\Controllers;
 
     use App\DTO\Requests\UserRequest\RequestInsertUserDto;
+    use App\DTO\Requests\UserRequest\RequestLoginUserDto;
     use App\Services\UserServices\UserService;
     use Illuminate\Http\Request;
 
@@ -27,8 +28,7 @@
 
         public function login(Request $request)
         {
-            $userDTO = new RequestInsertUserDto(
-                $request->input('name'),
+            $userDTO = new RequestLoginUserDto(
                 $request->input('email'),
                 $request->input('password')
             );

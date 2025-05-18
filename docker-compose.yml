@@ -10,7 +10,7 @@ services:
     networks:
       - internal
       # - net-redis-analytics-service
-      # - net-redis-api-gateway
+      # - net-redis-kong-gateway
       # - net-redis-catalog-service
       # - net-redis-frontend
       # - net-redis-notification-service
@@ -109,14 +109,14 @@ volumes:
   redis_data:
   rabbitmq_data:
 # sql-server-data:
-  zookeeper_data:
+# zookeeper_data:
   kafka_data:
 
 networks:
   internal:
   # redis <-> each service
   # net-redis-analytics-service:           { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.101.0/24" } ] } }
-  # net-redis-api-gateway:                 { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.102.0/24" } ] } }
+  # net-redis-kong-gateway:                 { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.102.0/24" } ] } }
   # net-redis-catalog-service:             { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.104.0/24" } ] } }
   # net-redis-frontend:                    { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.105.0/24" } ] } }
   # net-redis-notification-service:        { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.106.0/24" } ] } }
@@ -141,11 +141,11 @@ networks:
   # net-sql-server-payment-service:        { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.126.0/24" } ] } }
   # net-sql-server-user-service:           { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.127.0/24" } ] } }
 
-  # api-gateway <-> each service
-  # net-api-gateway-analytics-service:     { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.131.0/24" } ] } }
-  # net-api-gateway-catalog-service:       { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.133.0/24" } ] } }
-  # net-api-gateway-frontend:              { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.134.0/24" } ] } }
-  # net-api-gateway-notification-service:  { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.135.0/24" } ] } }
-  # net-api-gateway-order-service:         { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.136.0/24" } ] } }
-  # net-api-gateway-payment-service:       { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.137.0/24" } ] } }
-  # net-api-gateway-user-service:          { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.138.0/24" } ] } }
+  # kong-gateway <-> each service
+  # net-kong-gateway-analytics-service:     { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.131.0/24" } ] } }
+  # net-kong-gateway-catalog-service:       { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.133.0/24" } ] } }
+  # net-kong-gateway-frontend:              { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.134.0/24" } ] } }
+  # net-kong-gateway-notification-service:  { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.135.0/24" } ] } }
+  # net-kong-gateway-order-service:         { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.136.0/24" } ] } }
+  # net-kong-gateway-payment-service:       { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.137.0/24" } ] } }
+  # net-kong-gateway-user-service:          { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.138.0/24" } ] } }

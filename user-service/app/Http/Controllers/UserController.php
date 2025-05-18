@@ -11,11 +11,10 @@
 
         public function __construct(UserService $userService)
         {
-            var_dump('UserController');
             $this->userService = $userService;
         }
 
-        public function createUser(Request $request)
+        public function register(Request $request)
         {
             $userDTO = new RequestInsertUserDto(
                 $request->input('name'),
@@ -34,12 +33,11 @@
                 $request->input('password')
             );
             $user = $this->userService->login($userDTO);
-            return response()->json($user);
-        }
 
-        public function cacchio(Request $request)
-        {
-            var_dump($request->all());
-            return response()->json(['message' => 'Hello world!']);
+            if (! $user) {
+                return response()->json(['message' => 'Invalid credentials'], 401);
+            }
+
+            return response()->json($user);
         }
     }

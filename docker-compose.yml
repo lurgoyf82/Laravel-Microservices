@@ -81,29 +81,29 @@ services:
     # ports:
     #   - "9092:9092"   # uncomment if you need host access
 
-  sql-server:                                             # database MySQL dedicato
-    image: mcr.microsoft.com/mssql/server:2019-latest     # immagine MySQL 8.x ufficiale
-    container_name: sql-server                            # nome fisso del container DB
-    restart: unless-stopped                               # riavvia dopo crash, ma non se fermato a mano
-    depends_on:
-      - kafka
-    environment:                                          # credenziali/database da creare al primo avvio
-      ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: rootpass
-    volumes:
-      - sql-server-data:/var/opt/mssql
-      - ./setup.sql:/scripts/setup.sql:ro
-      - ./addpermissions.sql:/scripts/addpermissions.sql:ro
-      - ./init-sql-server.sh:/init-sql-server.sh:ro
-    command: ["/bin/bash", "/init-sql-server.sh"]
-    networks:
-      - internal
-      # - net-sql-server-analytics-service
-      # - net-sql-server-catalog-service
-      # - net-sql-server-notification-service
-      # - net-sql-server-order-service
-      # - net-sql-server-payment-service
-      # - net-sql-server-user-service
+  # sql-server:                                             # database MySQL dedicato
+  #   image: mcr.microsoft.com/mssql/server:2019-latest     # immagine MySQL 8.x ufficiale
+  #   container_name: sql-server                            # nome fisso del container DB
+  #   restart: unless-stopped                               # riavvia dopo crash, ma non se fermato a mano
+  #   depends_on:
+  #     - kafka
+  #   environment:                                          # credenziali/database da creare al primo avvio
+  #     ACCEPT_EULA: "Y"
+  #     MSSQL_SA_PASSWORD: rootpass
+  #   volumes:
+  #     - sql-server-data:/var/opt/mssql
+  #     - ./setup.sql:/scripts/setup.sql:ro
+  #     - ./addpermissions.sql:/scripts/addpermissions.sql:ro
+  #     - ./init-sql-server.sh:/init-sql-server.sh:ro
+  #   command: ["/bin/bash", "/init-sql-server.sh"]
+  #   networks:
+  #     - internal
+  #     # - net-sql-server-analytics-service
+  #     # - net-sql-server-catalog-service
+  #     # - net-sql-server-notification-service
+  #     # - net-sql-server-order-service
+  #     # - net-sql-server-payment-service
+  #     # - net-sql-server-user-service
 
 volumes:
   redis_data:

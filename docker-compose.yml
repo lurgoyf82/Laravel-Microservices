@@ -1,4 +1,4 @@
-#C:\Repos\Laravel-Microservices\docker-compose.yml
+# C:\Repos\Laravel-Microservices\docker-compose.yml
 services:
   # Redis condiviso
   redis:
@@ -12,7 +12,7 @@ services:
       # - net-redis-analytics-service
       # - net-redis-api-gateway
       # - net-redis-catalog-service
-      # #- net-redis-frontend
+      # - net-redis-frontend
       # - net-redis-notification-service
       # - net-redis-order-service
       # - net-redis-payment-service
@@ -34,7 +34,7 @@ services:
       - internal
       # - net-rabbitmq-analytics-service
       # - net-rabbitmq-catalog-service
-      # #- net-rabbitmq-frontend
+      # - net-rabbitmq-frontend
       # - net-rabbitmq-notification-service
       # - net-rabbitmq-order-service
       # - net-rabbitmq-payment-service
@@ -52,17 +52,29 @@ services:
       - zookeeper_data:/bitnami/zookeeper
     networks:
       - internal
-
+      
+  # ????????????????????????????????????????????????????????????????
+  # Single-node Kafka broker *and* controller (KRaft)
+  # ????????????????????????????????????????????????????????????????
   kafka:
     image: bitnami/kafka:latest
     container_name: kafka
     restart: unless-stopped
     environment:
-      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      ALLOW_PLAINTEXT_LISTENER: "yes"
-    depends_on:
-      - zookeeper
+      # --- KRaft boilerplate -------------------------------------
+      KAFKA_ENABLE_KRAFT: "yes"                       # disable ZooKeeper
+      KAFKA_CFG_PROCESS_ROLES: "broker,controller"    # this node is both
+      KAFKA_CFG_NODE_ID: 1                            # unique integer per node
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      # (Optional) make the ID explicit so you can add nodes later
+      # KAFKA_KRAFT_CLUSTER_ID: "bXkta2Fma2EtY2x1c3Rlci1pZA=="     # base-64 UUID
+      # --- Listeners ---------------------------------------------
+      KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
+      KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      ALLOW_PLAINTEXT_LISTENER: "yes"                 # dev-only convenience
+    ports:
+      - "9092:9092"      # broker traffic
     volumes:
       - kafka_data:/bitnami/kafka
     networks:
@@ -101,26 +113,26 @@ volumes:
 
 networks:
   internal:
-  # # redis <-> each service
+  # redis <-> each service
   # net-redis-analytics-service:           { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.101.0/24" } ] } }
   # net-redis-api-gateway:                 { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.102.0/24" } ] } }
   # net-redis-catalog-service:             { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.104.0/24" } ] } }
-  # #net-redis-frontend:                   { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.105.0/24" } ] } }
+  # net-redis-frontend:                    { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.105.0/24" } ] } }
   # net-redis-notification-service:        { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.106.0/24" } ] } }
   # net-redis-order-service:               { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.107.0/24" } ] } }
   # net-redis-payment-service:             { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.108.0/24" } ] } }
   # net-redis-user-service:                { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.109.0/24" } ] } }
 
-  # # rabbitmq <-> each service            
+  # rabbitmq <-> each service            
   # net-rabbitmq-analytics-service:        { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.111.0/24" } ] } }
   # net-rabbitmq-catalog-service:          { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.113.0/24" } ] } }
-  # #net-rabbitmq-frontend:                { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.114.0/24" } ] } }
+  # net-rabbitmq-frontend:                 { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.114.0/24" } ] } }
   # net-rabbitmq-notification-service:     { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.115.0/24" } ] } }
   # net-rabbitmq-order-service:            { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.116.0/24" } ] } }
   # net-rabbitmq-payment-service:          { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.117.0/24" } ] } }
   # net-rabbitmq-user-service:             { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.118.0/24" } ] } }
   
-  # # sql-server <-> each service          
+  # sql-server <-> each service          
   # net-sql-server-analytics-service:      { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.121.0/24" } ] } }
   # net-sql-server-catalog-service:        { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.123.0/24" } ] } }
   # net-sql-server-notification-service:   { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.124.0/24" } ] } }
@@ -128,10 +140,10 @@ networks:
   # net-sql-server-payment-service:        { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.126.0/24" } ] } }
   # net-sql-server-user-service:           { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.127.0/24" } ] } }
 
-  # # api-gateway <-> each service
+  # api-gateway <-> each service
   # net-api-gateway-analytics-service:     { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.131.0/24" } ] } }
   # net-api-gateway-catalog-service:       { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.133.0/24" } ] } }
-  # #net-api-gateway-frontend:             { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.134.0/24" } ] } }
+  # net-api-gateway-frontend:              { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.134.0/24" } ] } }
   # net-api-gateway-notification-service:  { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.135.0/24" } ] } }
   # net-api-gateway-order-service:         { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.136.0/24" } ] } }
   # net-api-gateway-payment-service:       { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.137.0/24" } ] } }

@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SendNotificationRequest",
+  "type": "object",
+  "required": ["user_id", "message", "channel"],
+  "properties": {
+    "user_id": {"type": "string"},
+    "message": {"type": "string"},
+    "channel": {"type": "string"}
+  }
+}

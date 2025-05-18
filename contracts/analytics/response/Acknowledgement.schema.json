@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AcknowledgementResponse",
+  "type": "object",
+  "required": ["event_id", "received"],
+  "properties": {
+    "event_id": {"type": "string"},
+    "received": {"type": "boolean"}
+  }
+}

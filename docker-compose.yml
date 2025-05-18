@@ -24,6 +24,8 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmq
     restart: unless-stopped
+    depends_on:
+      - redis
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -44,6 +46,8 @@ services:
     image: bitnami/zookeeper:latest
     container_name: zookeeper
     restart: unless-stopped
+    depends_on:
+      - rabbitmq
     environment:
       ALLOW_ANONYMOUS_LOGIN: "yes"
     volumes:
@@ -70,11 +74,17 @@ services:
     image: mcr.microsoft.com/mssql/server:2019-latest     # immagine MySQL 8.x ufficiale
     container_name: sql-server                            # nome fisso del container DB
     restart: unless-stopped                               # riavvia dopo crash, ma non se fermato a mano
+    depends_on:
+      - kafka
     environment:                                          # credenziali/database da creare al primo avvio
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: rootpass
     volumes:
       - sql-server-data:/var/opt/mssql
+      - ./setup.sql:/scripts/setup.sql:ro
+      - ./addpermissions.sql:/scripts/addpermissions.sql:ro
+      - ./init-sql-server.sh:/init-sql-server.sh:ro
+    command: ["/bin/bash", "/init-sql-server.sh"]
     networks:
       - internal
       # - net-sql-server-analytics-service

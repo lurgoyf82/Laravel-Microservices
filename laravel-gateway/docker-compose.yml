@@ -1,17 +1,40 @@
+#C:\Repos\Laravel-Microservices\laravel-gateway\docker-compose.yml
 services:
-  api-gateway:
-    image: kong:3.6
-    container_name: api-gateway
-    environment:
-      KONG_DATABASE: "off"
-      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
+  laravel-gateway:
+    build:
+      context: ./laravel-gateway
+      dockerfile: Dockerfile
+    env_file: laravel-gateway/.env
+    container_name: laravel-gateway
+    restart: unless-stopped
     volumes:
-      - ./kong.yml:/usr/local/kong/declarative/kong.yml
+      - ./laravel-gateway:/var/www/html
     ports:
-      - "8000:8000"
-      - "8443:8443"
-      - "8001:8001"
-      - "8444:8444"
+      - "8000:80"
+      - "8443:443"
     networks:
       - internal
-    restart: unless-stopped
+      # - net-laravel-gateway-analytics-service
+      # - net-laravel-gateway-auth-service
+      # - net-laravel-gateway-catalog-service
+      # #- net-laravel-gateway-frontend
+      # - net-laravel-gateway-notification-service
+      # - net-laravel-gateway-order-service
+      # - net-laravel-gateway-payment-service
+      # - net-laravel-gateway-user-service
+      # - net-redis-laravel-gateway
+    depends_on:
+      - redis
+    
+# networks:
+#   net-laravel-gateway-analytics-service:        { external: true }
+#   net-laravel-gateway-auth-service:             { external: true }
+#   net-laravel-gateway-catalog-service:          { external: true }
+#   #net-laravel-gateway-frontend:                { external: true }
+#   net-laravel-gateway-notification-service:     { external: true }
+#   net-laravel-gateway-order-service:            { external: true }
+#   net-laravel-gateway-payment-service:          { external: true }
+#   net-laravel-gateway-user-service:             { external: true }
+#   net-redis-laravel-gateway:                    { external: true }
+    
+

@@ -105,6 +105,131 @@ services:
   #     # - net-sql-server-payment-service
   #     # - net-sql-server-user-service
 
+  auth-service:
+    image: quay.io/keycloak/keycloak:24.0.1
+    container_name: auth-service
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    networks:
+      - internal
+    restart: unless-stopped
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    container_name: user-service
+    env_file: user-service/.env
+    ports:
+      - "8003:80"
+    volumes:
+      - ./user-service:/var/www/html
+    depends_on:
+      - redis
+      - rabbitmq
+    networks:
+      - internal
+
+  catalog-service:
+    build:
+      context: ./catalog-service
+      dockerfile: Dockerfile
+    container_name: catalog-service
+    env_file: catalog-service/.env
+    ports:
+      - "8004:80"
+    volumes:
+      - ./catalog-service:/var/www/html
+    depends_on:
+      - redis
+      - rabbitmq
+    networks:
+      - internal
+
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    container_name: order-service
+    env_file: order-service/.env
+    ports:
+      - "8005:80"
+    volumes:
+      - ./order-service:/var/www/html
+    depends_on:
+      - redis
+      - rabbitmq
+    networks:
+      - internal
+
+  payment-service:
+    build:
+      context: ./payment-service
+      dockerfile: Dockerfile
+    container_name: payment-service
+    env_file: payment-service/.env
+    ports:
+      - "8006:80"
+    volumes:
+      - ./payment-service:/var/www/html
+    depends_on:
+      - redis
+      - rabbitmq
+    networks:
+      - internal
+
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    container_name: notification-service
+    env_file: notification-service/.env
+    ports:
+      - "8007:80"
+    volumes:
+      - ./notification-service:/var/www/html
+    depends_on:
+      - redis
+      - rabbitmq
+    networks:
+      - internal
+
+  analytics-service:
+    build:
+      context: ./analytics-service
+      dockerfile: Dockerfile
+    container_name: analytics-service
+    env_file: analytics-service/.env
+    ports:
+      - "8008:80"
+    volumes:
+      - ./analytics-service:/var/www/html
+    depends_on:
+      - redis
+      - rabbitmq
+    networks:
+      - internal
+
+  kong-gateway:
+    image: kong:3.6
+    container_name: api-gateway
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
+    volumes:
+      - ./kong-gateway/kong.yml:/usr/local/kong/declarative/kong.yml
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "8001:8001"
+      - "8444:8444"
+    networks:
+      - internal
+    restart: unless-stopped
 volumes:
   redis_data:
   rabbitmq_data:

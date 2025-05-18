@@ -2,6 +2,7 @@
     namespace App\Services\UserServices;
 
     use App\DTO\Requests\UserRequest\RequestInsertUserDto;
+    use App\DTO\Requests\UserRequest\RequestLoginUserDto;
     use App\Models\User;
     use Illuminate\Support\Facades\Hash;
 
@@ -20,7 +21,7 @@ class UserService
         return $user;
     }
 
-    public function login(RequestInsertUserDto $userDTO): ?User
+    public function login(RequestLoginUserDto $userDTO): ?User
     {
         $user = User::where('email', $userDTO->email)->first();
 

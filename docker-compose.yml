@@ -53,32 +53,33 @@ services:
     networks:
       - internal
       
-  # ????????????????????????????????????????????????????????????????
+  # ----------------------------------------------------------------
   # Single-node Kafka broker *and* controller (KRaft)
-  # ????????????????????????????????????????????????????????????????
+  # ----------------------------------------------------------------
   kafka:
-    image: bitnami/kafka:latest
+    image: bitnami/kafka:latest             # pin a concrete tag if you need determinism
     container_name: kafka
     restart: unless-stopped
+    depends_on:
+      - rabbitmq                            # start order only
     environment:
-      # --- KRaft boilerplate -------------------------------------
-      KAFKA_ENABLE_KRAFT: "yes"                       # disable ZooKeeper
-      KAFKA_CFG_PROCESS_ROLES: "broker,controller"    # this node is both
-      KAFKA_CFG_NODE_ID: 1                            # unique integer per node
+      # --- KRaft on, ZooKeeper gone ---
+      KAFKA_ENABLE_KRAFT: "yes"             # optional on 4.x but harmless :contentReference[oaicite:0]{index=0}
+      KAFKA_CFG_PROCESS_ROLES: "broker,controller"
+      KAFKA_CFG_NODE_ID: 1
       KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
       KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
-      # (Optional) make the ID explicit so you can add nodes later
-      # KAFKA_KRAFT_CLUSTER_ID: "bXkta2Fma2EtY2x1c3Rlci1pZA=="     # base-64 UUID
-      # --- Listeners ---------------------------------------------
-      KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
+      # --- listeners ---
+      KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"   # must include CONTROLLER :contentReference[oaicite:1]{index=1}
       KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
-      ALLOW_PLAINTEXT_LISTENER: "yes"                 # dev-only convenience
-    ports:
-      - "9092:9092"      # broker traffic
+      ALLOW_PLAINTEXT_LISTENER: "yes"   # dev-only
+      # KAFKA_KRAFT_CLUSTER_ID: "bXkta2Fma2EtdGVzdC1pZA=="          # (optional) fixed cluster UUID
     volumes:
       - kafka_data:/bitnami/kafka
     networks:
       - internal
+    # ports:
+    #   - "9092:9092"   # uncomment if you need host access
 
   sql-server:                                             # database MySQL dedicato
     image: mcr.microsoft.com/mssql/server:2019-latest     # immagine MySQL 8.x ufficiale

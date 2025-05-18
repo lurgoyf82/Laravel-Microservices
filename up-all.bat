@@ -9,6 +9,7 @@ REM  The caret (^) lets us split one long command across lines.
 docker compose ^
   -f docker-compose.yml ^
   -f docker-compose.mgmt.yml ^
+  -f sql-server\docker-compose.yml ^
   -f api-gateway\docker-compose.yml ^
   -f analytics-service\docker-compose.yml ^
   -f auth-service\docker-compose.yml ^

@@ -40,18 +40,18 @@ services:
       # - net-rabbitmq-payment-service
       # - net-rabbitmq-user-service
                              
-  zookeeper:
-    image: bitnami/zookeeper:latest
-    container_name: zookeeper
-    restart: unless-stopped
-    depends_on:
-      - rabbitmq
-    environment:
-      ALLOW_ANONYMOUS_LOGIN: "yes"
-    volumes:
-      - zookeeper_data:/bitnami/zookeeper
-    networks:
-      - internal
+  # zookeeper:
+  #   image: bitnami/zookeeper:latest
+  #   container_name: zookeeper
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - rabbitmq
+  #   environment:
+  #     ALLOW_ANONYMOUS_LOGIN: "yes"
+  #   volumes:
+  #     - zookeeper_data:/bitnami/zookeeper
+  #   networks:
+  #     - internal
       
   # ----------------------------------------------------------------
   # Single-node Kafka broker *and* controller (KRaft)
@@ -108,7 +108,7 @@ services:
 volumes:
   redis_data:
   rabbitmq_data:
-  sql-server-data:
+# sql-server-data:
   zookeeper_data:
   kafka_data:
 

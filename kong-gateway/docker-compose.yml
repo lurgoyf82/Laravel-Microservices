@@ -1,12 +1,14 @@
 services:
   api-gateway:
+    build:
+      context: ./kong-gateway
     image: kong:3.6
     container_name: kong-gateway
     environment:
       KONG_DATABASE: "off"
       KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
     volumes:
-      - ./kong.yml:/usr/local/kong/declarative/kong.yml
+      - ./kong-gateway/kong.yml:/usr/local/kong/declarative/kong.yml
     ports:
       - "8000:8000"
       - "8443:8443"

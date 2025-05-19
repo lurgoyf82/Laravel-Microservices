@@ -2,10 +2,10 @@
 services:
   order-service:                                    # servizio Laravel “order-service”
     build:                                              # builda un’immagine partendo dal Dockerfile in questa cartella
-      context: .
+      context: ./order-service
       dockerfile: Dockerfile
     container_name: order-service                   # nome fisso del container
-    env_file: .env                                    # carica variabili (DB, app key, ecc.) dal file .env locale
+    env_file: ./order-service/.env                                    # carica variabili (DB, app key, ecc.) dal file .env locale
     ports:
       - "8005:80"
     volumes:

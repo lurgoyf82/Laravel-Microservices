@@ -2,10 +2,10 @@
 services:
   frontend:                                             # servizio Laravel “frontend”
     build:                                              # builda un’immagine partendo dal Dockerfile in questa cartella
-      context: .
+      context: ./frontend
       dockerfile: Dockerfile
     container_name: frontend                            # nome fisso del container
-    env_file: .env                                    # carica variabili (DB, app key, ecc.) dal file .env locale
+    env_file: ./frontend/.env                                    # carica variabili (DB, app key, ecc.) dal file .env locale
     ports:
       - "9000:80"
     volumes:

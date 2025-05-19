@@ -2,10 +2,10 @@
 services:
   payment-service:                                      # servizio Laravel “payment-service”
     build:                                              # builda un’immagine partendo dal Dockerfile in questa cartella
-      context: .
+      context: ./payment-service
       dockerfile: Dockerfile
     container_name: payment-service                     # nome fisso del container
-    env_file: .env                                    # carica variabili (DB, app key, ecc.) dal file .env locale
+    env_file: ./payment-service/.env                                    # carica variabili (DB, app key, ecc.) dal file .env locale
     ports:
       - "8006:80"
     volumes:

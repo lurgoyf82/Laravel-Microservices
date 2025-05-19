@@ -2,13 +2,13 @@
 services:
   laravel-gateway:
     build:
-      context: .
+      context: ./laravel-gateway
       dockerfile: Dockerfile
-    env_file: .env
+    env_file: ./laravel-gateway/.env
     container_name: laravel-gateway
     restart: unless-stopped
     volumes:
-      - ./:/var/www/html
+      - ./laravel-gateway:/var/www/html
     ports:
       # Expose on host port 8002 to avoid clashes with Kong
       - "8002:80"

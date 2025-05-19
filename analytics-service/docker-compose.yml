@@ -2,10 +2,10 @@
 services:
   analytics-service:                                    # servizio Laravel “analytics-service”
     build:                                              # builda un’immagine partendo dal Dockerfile in questa cartella
-      context: .
+      context: ./analytics-service
       dockerfile: Dockerfile
     container_name: analytics-service                   # nome fisso del container
-    env_file: .env                                      # carica variabili (DB, app key, ecc.) dal file .env locale
+    env_file: ./analytics-service/.env                                      # carica variabili (DB, app key, ecc.) dal file .env locale
     ports:
       - "8008:80"
     volumes:

@@ -10,8 +10,10 @@ services:
     volumes:
       - ./laravel-gateway:/var/www/html
     ports:
-      - "8000:80"
-      - "8443:443"
+      # Expose on host port 8002 to avoid clashes with Kong
+      - "8002:80"
+      # Custom HTTPS port to prevent conflicts
+      - "8445:443"
     networks:
       - internal
       # - net-laravel-gateway-analytics-service

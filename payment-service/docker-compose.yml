@@ -2,14 +2,14 @@
 services:
   payment-service:                                      # servizio Laravel “payment-service”
     build:                                              # builda un’immagine partendo dal Dockerfile in questa cartella
-      context: ./payment-service
+      context: .
       dockerfile: Dockerfile
     container_name: payment-service                     # nome fisso del container
-    env_file: payment-service/.env                    # carica variabili (DB, app key, ecc.) dal file .env locale
+    env_file: .env                                    # carica variabili (DB, app key, ecc.) dal file .env locale
     ports:
       - "8006:80"
     volumes:
-      - ./payment-service:/var/www/html                              # bind-mount del sorgente: ogni modifica locale si vede subito nel container
+      - ./:/var/www/html                                            # bind-mount del sorgente: ogni modifica locale si vede subito nel container
     depends_on:                                         # ordine di avvio (non health-check)
       - sql-server                                    
       - redis

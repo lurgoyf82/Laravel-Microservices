@@ -1,8 +1,7 @@
 # C:\Repos\Laravel-Microservices\sql-server\docker-compose.yml
 services:
   sql-server:                                             # database Microsoft SQL Server
-    build:
-      context: ./sql-server
+    image: mcr.microsoft.com/mssql/server:2019-latest
     restart: unless-stopped                               # riavvia dopo crash, ma non se fermato a mano
     depends_on:
       - kafka
@@ -11,9 +10,9 @@ services:
       MSSQL_SA_PASSWORD: rootpass
     volumes:
       - sql-server-data:/var/opt/mssql
-      # - ./setup.sql:/scripts/setup.sql:ro
-      # - ./addpermissions.sql:/scripts/addpermissions.sql:ro
-      # - ./init-sql-server.sh:/init-sql-server.sh:ro
+      - ./01_setup.sql:/scripts/setup.sql:ro
+      - ./02_addpermissions.sql:/scripts/addpermissions.sql:ro
+      - ../init-sql-server.sh:/init-sql-server.sh:ro
     command: ["/bin/bash", "/init-sql-server.sh"]
     networks:
       - internal

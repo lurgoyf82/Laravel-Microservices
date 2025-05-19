@@ -10,11 +10,9 @@ docker compose ^
   -f docker-compose.yml ^
   -f docker-compose.mgmt.yml ^
   -f sql-server\docker-compose.yml ^
-  -f laravel-gateway\docker-compose.yml ^
   -f kong-gateway\docker-compose.yml ^
   -f analytics-service\docker-compose.yml ^
-  -f auth-service\docker-compose.yml ^
-  -f jwt-service\docker-compose.yml ^
+  -f keycloak-auth-service\docker-compose.yml ^
   -f catalog-service\docker-compose.yml ^
   -f notification-service\docker-compose.yml ^
   -f order-service\docker-compose.yml ^

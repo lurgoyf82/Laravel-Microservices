@@ -1,7 +1,7 @@
 services:
   auth-service:
     image: quay.io/keycloak/keycloak:24.0.1
-    container_name: auth-service
+    container_name: keycloak-auth-service
     command: start-dev
     environment:
       KEYCLOAK_ADMIN: admin

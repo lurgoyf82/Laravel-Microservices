@@ -102,6 +102,7 @@ COPY vhost.conf /etc/apache2/sites-available/000-default.conf
 #COPY /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 RUN chown -R www-data:www-data /var/www/html
+WORKDIR /var/www/html
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh

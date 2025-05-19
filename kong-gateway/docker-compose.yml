@@ -1,7 +1,7 @@
 services:
   api-gateway:
     image: kong:3.6
-    container_name: api-gateway
+    container_name: kong-gateway
     environment:
       KONG_DATABASE: "off"
       KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml

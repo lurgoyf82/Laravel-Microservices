@@ -10,10 +10,6 @@ services:
       MSSQL_SA_PASSWORD: rootpass
     volumes:
       - sql-server-data:/var/opt/mssql
-      - ./01_setup.sql:/scripts/setup.sql:ro
-      - ./02_addpermissions.sql:/scripts/addpermissions.sql:ro
-      - ../init-sql-server.sh:/init-sql-server.sh:ro
-    command: ["/bin/bash", "/init-sql-server.sh"]
     networks:
       - internal
       # - net-sql-server-analytics-service

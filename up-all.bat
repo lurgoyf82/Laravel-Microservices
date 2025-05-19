@@ -5,19 +5,19 @@ REM ------------------------------------------------------------
 
 REM  Run `docker compose` with all compose files.
 REM  The caret (^) lets us split one long command across lines.
-
+  
 docker compose ^
   -f docker-compose.yml ^
+  -f sql-server/docker-compose.yml ^
   -f docker-compose.mgmt.yml ^
-  -f sql-server\docker-compose.yml ^
-  -f kong-gateway\docker-compose.yml ^
-  -f analytics-service\docker-compose.yml ^
-  -f keycloak-auth-service\docker-compose.yml ^
-  -f catalog-service\docker-compose.yml ^
-  -f notification-service\docker-compose.yml ^
-  -f order-service\docker-compose.yml ^
-  -f payment-service\docker-compose.yml ^
-  -f user-service\docker-compose.yml ^
+  -f kong-gateway/docker-compose.yml ^
+  -f analytics-service/docker-compose.yml ^
+  -f keycloak-auth-service/docker-compose.yml ^
+  -f catalog-service/docker-compose.yml ^
+  -f notification-service/docker-compose.yml ^
+  -f order-service/docker-compose.yml ^
+  -f payment-service/docker-compose.yml ^
+  -f user-service/docker-compose.yml ^
   up -d
 
 REM  Propagate Docker’s exit code and keep the window open

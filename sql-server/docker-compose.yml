@@ -1,7 +1,9 @@
 # C:\Repos\Laravel-Microservices\sql-server\docker-compose.yml
 services:
   sql-server:                                             # database Microsoft SQL Server
-    build: .                                              # build custom image with initialization scripts
+    build:
+      context: ./sql-server
+      dockerfile: Dockerfile
     restart: unless-stopped                               # riavvia dopo crash, ma non se fermato a mano
     depends_on:
       - kafka

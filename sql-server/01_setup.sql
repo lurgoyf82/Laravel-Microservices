@@ -5,6 +5,10 @@ IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'analytics_service_db')
   CREATE DATABASE analytics_service_db;
 IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'api_gateway_db')
   CREATE DATABASE api_gateway_db;
+IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'laravel_gateway_db')
+  CREATE DATABASE laravel_gateway_db;
+IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'kong_gateway_db')
+  CREATE DATABASE kong_gateway_db;
 IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'jwt_service_db')
   CREATE DATABASE jwt_service_db;
 IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'catalog_service_db')
@@ -86,7 +90,59 @@ BEGIN TRY
 		GRANT EXECUTE TO api_gateway_user;
 
 	--------------------------------------------------------------------------------
-	-- 3) jwt-service
+	-- 3) laravel-gateway
+	--------------------------------------------------------------------------------
+		--CREATE DATABASE laravel_gateway_db;
+
+		CREATE LOGIN laravel_gateway_user 
+		WITH PASSWORD = 'laravel_gateway_password',
+		  CHECK_POLICY = OFF,
+		  CHECK_EXPIRATION = OFF;
+
+		USE laravel_gateway_db;
+
+		CREATE USER laravel_gateway_user 
+		FOR LOGIN laravel_gateway_user;
+
+		ALTER ROLE db_datareader ADD MEMBER laravel_gateway_user;
+
+		ALTER USER laravel_gateway_user WITH DEFAULT_SCHEMA = dbo;
+		GRANT CREATE TABLE TO laravel_gateway_user; 
+		GRANT ALTER ON SCHEMA::dbo TO laravel_gateway_user; 
+		GRANT REFERENCES ON SCHEMA::dbo TO laravel_gateway_user; 
+		GRANT VIEW DEFINITION ON SCHEMA::dbo TO laravel_gateway_user;
+		GRANT CONTROL ON SCHEMA::dbo TO laravel_gateway_user;
+
+		GRANT EXECUTE TO laravel_gateway_user;
+
+	--------------------------------------------------------------------------------
+	-- 4) kong-gateway
+	--------------------------------------------------------------------------------
+		--CREATE DATABASE kong_gateway_db;
+
+		CREATE LOGIN kong_gateway_user 
+		WITH PASSWORD = 'kong_gateway_password',
+		  CHECK_POLICY = OFF,
+		  CHECK_EXPIRATION = OFF;
+
+		USE kong_gateway_db;
+
+		CREATE USER kong_gateway_user 
+		FOR LOGIN kong_gateway_user;
+
+		ALTER ROLE db_datareader ADD MEMBER kong_gateway_user;
+
+		ALTER USER kong_gateway_user WITH DEFAULT_SCHEMA = dbo;
+		GRANT CREATE TABLE TO kong_gateway_user; 
+		GRANT ALTER ON SCHEMA::dbo TO kong_gateway_user; 
+		GRANT REFERENCES ON SCHEMA::dbo TO kong_gateway_user; 
+		GRANT VIEW DEFINITION ON SCHEMA::dbo TO kong_gateway_user;
+		GRANT CONTROL ON SCHEMA::dbo TO kong_gateway_user;
+
+		GRANT EXECUTE TO kong_gateway_user;
+
+	--------------------------------------------------------------------------------
+	-- 5) jwt-service
 	--------------------------------------------------------------------------------
 		--CREATE DATABASE jwt_service_db;
 
@@ -112,7 +168,7 @@ BEGIN TRY
 		GRANT EXECUTE TO jwt_service_user;
 
 	--------------------------------------------------------------------------------
-	-- 4) catalog-service
+	-- 6) catalog-service
 	--------------------------------------------------------------------------------
 		--CREATE DATABASE catalog_service_db;
 
@@ -138,7 +194,7 @@ BEGIN TRY
 		GRANT EXECUTE TO catalog_service_user;
 
 	--------------------------------------------------------------------------------
-	-- 5) frontend
+	-- 7) frontend
 	--------------------------------------------------------------------------------
 		--CREATE DATABASE frontend_db;
 
@@ -164,7 +220,7 @@ BEGIN TRY
 		GRANT EXECUTE TO frontend_user;
 
 	--------------------------------------------------------------------------------
-	-- 6) notification-service
+	-- 8) notification-service
 	--------------------------------------------------------------------------------
 		--CREATE DATABASE notification_service_db;
 
@@ -190,7 +246,7 @@ BEGIN TRY
 		GRANT EXECUTE TO notification_service_user;
 
 	--------------------------------------------------------------------------------
-	-- 7) order-service
+	-- 9) order-service
 	--------------------------------------------------------------------------------
 		--CREATE DATABASE order_service_db;
 
@@ -216,7 +272,7 @@ BEGIN TRY
 		GRANT EXECUTE TO order_service_user;
 
 	--------------------------------------------------------------------------------
-	-- 8) payment-service
+	-- 10) payment-service
 	--------------------------------------------------------------------------------
 		--CREATE DATABASE payment_service_db;
 
@@ -242,7 +298,7 @@ BEGIN TRY
 		GRANT EXECUTE TO payment_service_user;
 
 	--------------------------------------------------------------------------------
-	-- 9) user-service
+	-- 11) user-service
 	--------------------------------------------------------------------------------
 		--CREATE DATABASE user_service_db;
 
@@ -268,7 +324,7 @@ BEGIN TRY
 		GRANT EXECUTE TO user_service_user;
 
 	--------------------------------------------------------------------------------
-	-- 10) auth-service
+	-- 12) auth-service
 	--------------------------------------------------------------------------------
 		--CREATE DATABASE auth_service_db;
 

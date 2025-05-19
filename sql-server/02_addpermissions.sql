@@ -34,7 +34,41 @@ BEGIN TRY
 		GRANT EXECUTE TO api_gateway_user;
 
 	--------------------------------------------------------------------------------
-	-- 3) jwt-service
+	-- 3) laravel-gateway
+	--------------------------------------------------------------------------------
+
+		USE laravel_gateway_db;
+
+		ALTER ROLE db_datawriter ADD MEMBER laravel_gateway_user;
+
+		ALTER USER laravel_gateway_user WITH DEFAULT_SCHEMA = dbo;
+		GRANT CREATE TABLE TO laravel_gateway_user; 
+		GRANT ALTER ON SCHEMA::dbo TO laravel_gateway_user; 
+		GRANT REFERENCES ON SCHEMA::dbo TO laravel_gateway_user; 
+		GRANT VIEW DEFINITION ON SCHEMA::dbo TO laravel_gateway_user;
+		GRANT CONTROL ON SCHEMA::dbo TO laravel_gateway_user;
+
+		GRANT EXECUTE TO laravel_gateway_user;
+
+	--------------------------------------------------------------------------------
+	-- 4) kong-gateway
+	--------------------------------------------------------------------------------
+
+		USE kong_gateway_db;
+
+		ALTER ROLE db_datawriter ADD MEMBER kong_gateway_user;
+
+		ALTER USER kong_gateway_user WITH DEFAULT_SCHEMA = dbo;
+		GRANT CREATE TABLE TO kong_gateway_user; 
+		GRANT ALTER ON SCHEMA::dbo TO kong_gateway_user; 
+		GRANT REFERENCES ON SCHEMA::dbo TO kong_gateway_user; 
+		GRANT VIEW DEFINITION ON SCHEMA::dbo TO kong_gateway_user;
+		GRANT CONTROL ON SCHEMA::dbo TO kong_gateway_user;
+
+		GRANT EXECUTE TO kong_gateway_user;
+
+	--------------------------------------------------------------------------------
+	-- 5) jwt-service
 	--------------------------------------------------------------------------------
 
 		USE jwt_service_db;
@@ -51,7 +85,7 @@ BEGIN TRY
 		GRANT EXECUTE TO jwt_service_user;
 
 	--------------------------------------------------------------------------------
-	-- 4) catalog-service
+	-- 6) catalog-service
 	--------------------------------------------------------------------------------
 
 		USE catalog_service_db;
@@ -68,7 +102,7 @@ BEGIN TRY
 		GRANT EXECUTE TO catalog_service_user;
 
 	--------------------------------------------------------------------------------
-	-- 5) frontend
+	-- 7) frontend
 	--------------------------------------------------------------------------------
 
 		USE frontend_db;
@@ -85,7 +119,7 @@ BEGIN TRY
 		GRANT EXECUTE TO frontend_user;
 
 	--------------------------------------------------------------------------------
-	-- 6) notification-service
+	-- 8) notification-service
 	--------------------------------------------------------------------------------
 
 		USE notification_service_db;
@@ -102,7 +136,7 @@ BEGIN TRY
 		GRANT EXECUTE TO notification_service_user;
 
 	--------------------------------------------------------------------------------
-	-- 7) order-service
+	-- 9) order-service
 	--------------------------------------------------------------------------------
 
 		USE order_service_db;
@@ -119,7 +153,7 @@ BEGIN TRY
 		GRANT EXECUTE TO order_service_user;
 
 	--------------------------------------------------------------------------------
-	-- 8) payment-service
+	-- 10) payment-service
 	--------------------------------------------------------------------------------
 
 		USE payment_service_db;
@@ -136,7 +170,7 @@ BEGIN TRY
 		GRANT EXECUTE TO payment_service_user;
 
 	--------------------------------------------------------------------------------
-	-- 9) user-service
+	-- 11) user-service
 	--------------------------------------------------------------------------------
 
 		USE user_service_db;
@@ -153,7 +187,7 @@ BEGIN TRY
 		GRANT EXECUTE TO user_service_user;
 
 	--------------------------------------------------------------------------------
-	-- 10) auth-service
+	-- 12) auth-service
 	--------------------------------------------------------------------------------
 
 		USE auth_service_db;

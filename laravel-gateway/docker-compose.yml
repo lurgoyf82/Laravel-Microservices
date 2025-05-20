@@ -4,7 +4,7 @@ services:
     build:
       context: ./laravel-gateway
       dockerfile: Dockerfile
-    env_file: ./laravel-gateway/.env
+    env_file: laravel-gateway/.env
     container_name: laravel-gateway
     restart: unless-stopped
     volumes:

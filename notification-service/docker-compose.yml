@@ -5,11 +5,11 @@ services:
       context: ./notification-service
       dockerfile: Dockerfile
     container_name: notification-service                # nome fisso del container
-    env_file: ./notification-service/.env                                    # carica variabili (DB, app key, ecc.) dal file .env locale
+    env_file: notification-service/.env                                    # carica variabili (DB, app key, ecc.) dal file .env locale
     ports:
       - "8007:80"
     volumes:
-      - ./:/var/www/html                                                 # bind-mount del sorgente: ogni modifica locale si vede subito nel container
+      - ./notification-service:/var/www/html                                                 # bind-mount del sorgente: ogni modifica locale si vede subito nel container
     depends_on:                                         # ordine di avvio (non health-check)
       - sql-server                                    
       - redis

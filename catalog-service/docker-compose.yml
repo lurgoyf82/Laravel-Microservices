@@ -5,11 +5,11 @@ services:
       context: ./catalog-service
       dockerfile: Dockerfile
     container_name: catalog-service                     # nome fisso del container
-    env_file: ./catalog-service/.env                                    # carica variabili (DB, app key, ecc.) dal file .env locale
+    env_file: analytics-service/.env                                    # carica variabili (DB, app key, ecc.) dal file .env locale
     ports:
       - "8004:80"
     volumes:
-      - ./:/var/www/html                                   # bind-mount del sorgente: ogni modifica locale si vede subito nel container
+      - ./catalog-service:/var/www/html                                   # bind-mount del sorgente: ogni modifica locale si vede subito nel container
     depends_on:                                         # ordine di avvio (non health-check)
       - sql-server                                    
       - redis

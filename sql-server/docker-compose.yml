@@ -8,6 +8,7 @@ services:
       - kafka
     environment:                                          # credenziali/database da creare al primo avvio
       ACCEPT_EULA: "Y"
+    # MSSQL_SA_PASSWORD: "Extremely$$4fePassword"         # Extremely$4fePassword
       MSSQL_SA_PASSWORD: rootpass
     volumes:
       - sql-server-data:/var/opt/mssql

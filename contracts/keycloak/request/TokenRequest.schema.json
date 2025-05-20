@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "KeycloakTokenRequest",
+  "type": "object",
+  "required": ["grant_type", "client_id", "username", "password"],
+  "properties": {
+    "grant_type": {"type": "string", "enum": ["password"]},
+    "client_id": {"type": "string"},
+    "client_secret": {"type": "string"},
+    "username": {"type": "string"},
+    "password": {"type": "string"}
+  }
+}

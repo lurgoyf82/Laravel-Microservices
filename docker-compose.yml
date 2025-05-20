@@ -1,4 +1,4 @@
-#C:\Repos\Laravel-Microservices\docker-compose.yml
+# C:\Repos\Laravel-Microservices\docker-compose.yml
 services:
   # Redis condiviso
   redis:
@@ -10,10 +10,9 @@ services:
     networks:
       - internal
       # - net-redis-analytics-service
-      # - net-redis-api-gateway
-      # - net-redis-jwt-service
+      # - net-redis-kong-gateway
       # - net-redis-catalog-service
-      # #- net-redis-frontend
+      # - net-redis-frontend
       # - net-redis-notification-service
       # - net-redis-order-service
       # - net-redis-payment-service
@@ -24,6 +23,8 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmq
     restart: unless-stopped
+    depends_on:
+      - redis
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -32,76 +33,119 @@ services:
     networks:
       - internal
       # - net-rabbitmq-analytics-service
-      # - net-rabbitmq-jwt-service
       # - net-rabbitmq-catalog-service
-      # #- net-rabbitmq-frontend
+      # - net-rabbitmq-frontend
       # - net-rabbitmq-notification-service
       # - net-rabbitmq-order-service
       # - net-rabbitmq-payment-service
       # - net-rabbitmq-user-service
                              
-  sql-server:                                             # database MySQL dedicato
-    image: mcr.microsoft.com/mssql/server:2019-latest     # immagine MySQL 8.x ufficiale
-    container_name: sql-server                            # nome fisso del container DB
-    restart: unless-stopped                               # riavvia dopo crash, ma non se fermato a mano
-    environment:                                          # credenziali/database da creare al primo avvio
-      ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: rootpass
+  # zookeeper:
+  #   image: bitnami/zookeeper:latest
+  #   container_name: zookeeper
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - rabbitmq
+  #   environment:
+  #     ALLOW_ANONYMOUS_LOGIN: "yes"
+  #   volumes:
+  #     - zookeeper_data:/bitnami/zookeeper
+  #   networks:
+  #     - internal
+      
+  # ----------------------------------------------------------------
+  # Single-node Kafka broker *and* controller (KRaft)
+  # ----------------------------------------------------------------
+  kafka:
+    image: bitnami/kafka:latest             # pin a concrete tag if you need determinism
+    container_name: kafka
+    restart: unless-stopped
+    depends_on:
+      - rabbitmq                            # start order only
+    environment:
+      # --- KRaft on, ZooKeeper gone ---
+      KAFKA_ENABLE_KRAFT: "yes"             # optional on 4.x but harmless :contentReference[oaicite:0]{index=0}
+      KAFKA_CFG_PROCESS_ROLES: "broker,controller"
+      KAFKA_CFG_NODE_ID: 1
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      # --- listeners ---
+      KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"   # must include CONTROLLER :contentReference[oaicite:1]{index=1}
+      KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      ALLOW_PLAINTEXT_LISTENER: "yes"   # dev-only
+      # KAFKA_KRAFT_CLUSTER_ID: "bXkta2Fma2EtdGVzdC1pZA=="          # (optional) fixed cluster UUID
     volumes:
-      - sql-server-data:/var/opt/mssql
+      - kafka_data:/bitnami/kafka
     networks:
       - internal
-      # - net-sql-server-analytics-service
-      # - net-sql-server-jwt-service
-      # - net-sql-server-catalog-service
-      # - net-sql-server-notification-service
-      # - net-sql-server-order-service
-      # - net-sql-server-payment-service
-      # - net-sql-server-user-service
+    # ports:
+    #   - "9092:9092"   # uncomment if you need host access
+
+  # sql-server:                                             # database MySQL dedicato
+  #   image: mcr.microsoft.com/mssql/server:2019-latest     # immagine MySQL 8.x ufficiale
+  #   container_name: sql-server                            # nome fisso del container DB
+  #   restart: unless-stopped                               # riavvia dopo crash, ma non se fermato a mano
+  #   depends_on:
+  #     - kafka
+  #   environment:                                          # credenziali/database da creare al primo avvio
+  #     ACCEPT_EULA: "Y"
+  #     MSSQL_SA_PASSWORD: rootpass
+  #   volumes:
+  #     - sql-server-data:/var/opt/mssql
+  #     - ./setup.sql:/scripts/setup.sql:ro
+  #     - ./addpermissions.sql:/scripts/addpermissions.sql:ro
+  #     - ./init-sql-server.sh:/init-sql-server.sh:ro
+  #   command: ["/bin/bash", "/init-sql-server.sh"]
+  #   networks:
+  #     - internal
+  #     # - net-sql-server-analytics-service
+  #     # - net-sql-server-catalog-service
+  #     # - net-sql-server-notification-service
+  #     # - net-sql-server-order-service
+  #     # - net-sql-server-payment-service
+  #     # - net-sql-server-user-service
 
 volumes:
   redis_data:
   rabbitmq_data:
-  sql-server-data:
+# sql-server-data:
+# zookeeper_data:
+  kafka_data:
 
 networks:
   internal:
-  # # redis <-> each service
+  # redis <-> each service
   # net-redis-analytics-service:           { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.101.0/24" } ] } }
-  # net-redis-api-gateway:                 { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.102.0/24" } ] } }
-  # net-redis-jwt-service:                { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.103.0/24" } ] } }
+  # net-redis-kong-gateway:                 { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.102.0/24" } ] } }
   # net-redis-catalog-service:             { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.104.0/24" } ] } }
-  # #net-redis-frontend:                   { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.105.0/24" } ] } }
+  # net-redis-frontend:                    { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.105.0/24" } ] } }
   # net-redis-notification-service:        { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.106.0/24" } ] } }
   # net-redis-order-service:               { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.107.0/24" } ] } }
   # net-redis-payment-service:             { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.108.0/24" } ] } }
   # net-redis-user-service:                { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.109.0/24" } ] } }
 
-  # # rabbitmq <-> each service            
+  # rabbitmq <-> each service            
   # net-rabbitmq-analytics-service:        { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.111.0/24" } ] } }
-  # net-rabbitmq-jwt-service:             { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.112.0/24" } ] } }
   # net-rabbitmq-catalog-service:          { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.113.0/24" } ] } }
-  # #net-rabbitmq-frontend:                { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.114.0/24" } ] } }
+  # net-rabbitmq-frontend:                 { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.114.0/24" } ] } }
   # net-rabbitmq-notification-service:     { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.115.0/24" } ] } }
   # net-rabbitmq-order-service:            { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.116.0/24" } ] } }
   # net-rabbitmq-payment-service:          { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.117.0/24" } ] } }
   # net-rabbitmq-user-service:             { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.118.0/24" } ] } }
   
-  # # sql-server <-> each service          
+  # sql-server <-> each service          
   # net-sql-server-analytics-service:      { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.121.0/24" } ] } }
-  # net-sql-server-jwt-service:           { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.122.0/24" } ] } }
   # net-sql-server-catalog-service:        { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.123.0/24" } ] } }
   # net-sql-server-notification-service:   { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.124.0/24" } ] } }
   # net-sql-server-order-service:          { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.125.0/24" } ] } }
   # net-sql-server-payment-service:        { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.126.0/24" } ] } }
   # net-sql-server-user-service:           { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.127.0/24" } ] } }
 
-  # # api-gateway <-> each service
-  # net-api-gateway-analytics-service:     { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.131.0/24" } ] } }
-  # net-api-gateway-jwt-service:          { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.132.0/24" } ] } }
-  # net-api-gateway-catalog-service:       { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.133.0/24" } ] } }
-  # #net-api-gateway-frontend:             { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.134.0/24" } ] } }
-  # net-api-gateway-notification-service:  { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.135.0/24" } ] } }
-  # net-api-gateway-order-service:         { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.136.0/24" } ] } }
-  # net-api-gateway-payment-service:       { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.137.0/24" } ] } }
-  # net-api-gateway-user-service:          { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.138.0/24" } ] } }
+  # kong-gateway <-> each service
+  # net-kong-gateway-analytics-service:     { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.131.0/24" } ] } }
+  # net-kong-gateway-catalog-service:       { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.133.0/24" } ] } }
+  # net-kong-gateway-frontend:              { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.134.0/24" } ] } }
+  # net-kong-gateway-notification-service:  { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.135.0/24" } ] } }
+  # net-kong-gateway-order-service:         { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.136.0/24" } ] } }
+  # net-kong-gateway-payment-service:       { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.137.0/24" } ] } }
+  # net-kong-gateway-user-service:          { driver: bridge, ipam: { driver: default, config: [ { subnet: "172.18.138.0/24" } ] } }

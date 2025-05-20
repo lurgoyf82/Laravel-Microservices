@@ -13,3 +13,11 @@ services:
     ports:
       - "1433:1433"
       - "1434:1434"
+
+  # zookeeper:
+  #   ports:
+  #     - "2181:2181"
+
+  kafka:
+    ports:
+      - "9092:9092"

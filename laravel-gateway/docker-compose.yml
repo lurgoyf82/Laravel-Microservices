@@ -1,0 +1,42 @@
+#C:\Repos\Laravel-Microservices\laravel-gateway\docker-compose.yml
+services:
+  laravel-gateway:
+    build:
+      context: ./laravel-gateway
+      dockerfile: Dockerfile
+    env_file: laravel-gateway/.env
+    container_name: laravel-gateway
+    restart: unless-stopped
+    volumes:
+      - ./laravel-gateway:/var/www/html
+    ports:
+      # Expose on host port 8002 to avoid clashes with Kong
+      - "8002:80"
+      # Custom HTTPS port to prevent conflicts
+      - "8445:443"
+    networks:
+      - internal
+      # - net-laravel-gateway-analytics-service
+      # - net-laravel-gateway-auth-service
+      # - net-laravel-gateway-catalog-service
+      # #- net-laravel-gateway-frontend
+      # - net-laravel-gateway-notification-service
+      # - net-laravel-gateway-order-service
+      # - net-laravel-gateway-payment-service
+      # - net-laravel-gateway-user-service
+      # - net-redis-laravel-gateway
+    depends_on:
+      - redis
+    
+# networks:
+#   net-laravel-gateway-analytics-service:        { external: true }
+#   net-laravel-gateway-auth-service:             { external: true }
+#   net-laravel-gateway-catalog-service:          { external: true }
+#   #net-laravel-gateway-frontend:                { external: true }
+#   net-laravel-gateway-notification-service:     { external: true }
+#   net-laravel-gateway-order-service:            { external: true }
+#   net-laravel-gateway-payment-service:          { external: true }
+#   net-laravel-gateway-user-service:             { external: true }
+#   net-redis-laravel-gateway:                    { external: true }
+    
+

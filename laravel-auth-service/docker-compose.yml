@@ -1,0 +1,28 @@
+#C:\Repos\laravel-microservices\laravel-auth-service\docker-compose.yml
+services:
+  laravel-auth-service:                                    # servizio Laravel “laravel-auth-service”
+    build:                                              # builda un’immagine partendo dal Dockerfile in questa cartella
+      context: ./laravel-auth-service
+      dockerfile: Dockerfile
+    container_name: laravel-auth-service                   # nome fisso del container
+    env_file: laravel-auth-service/.env                                           # carica variabili (DB, app key, ecc.) dal file .env locale
+    ports:
+      - "8001:80"
+    volumes:
+      - ./laravel-auth-service:/var/www/html                                                # bind-mount del sorgente: ogni modifica locale si vede subito nel container
+    depends_on:                                         # ordine di avvio (non health-check)
+      - sql-server                                    
+      - redis
+      - rabbitmq
+    networks:
+      - internal
+      # - net-api-gateway-laravel-auth-service
+      # - net-rabbitmq-laravel-auth-service
+      # - net-redis-laravel-auth-service
+      # - net-sql-server-laravel-auth-service                # rete verso il gruppo SQL Server 1
+
+# networks:
+#   net-api-gateway-laravel-auth-service: { external: true }
+#   net-rabbitmq-laravel-auth-service:    { external: true }
+#   net-redis-laravel-auth-service:       { external: true }
+#   net-sql-server-laravel-auth-service:  { external: true }

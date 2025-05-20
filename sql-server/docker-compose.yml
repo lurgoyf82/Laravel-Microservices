@@ -1,0 +1,25 @@
+# C:\Repos\Laravel-Microservices\sql-server\docker-compose.yml
+services:
+  sql-server:                                             # database Microsoft SQL Server
+    container_name: sql-server                            # fixed container name
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    restart: unless-stopped                               # riavvia dopo crash, ma non se fermato a mano
+    depends_on:
+      - kafka
+    environment:                                          # credenziali/database da creare al primo avvio
+      ACCEPT_EULA: "Y"
+    # MSSQL_SA_PASSWORD: "Extremely$$4fePassword"         # Extremely$4fePassword
+      MSSQL_SA_PASSWORD: rootpass
+    volumes:
+      - sql-server-data:/var/opt/mssql
+    networks:
+      - internal
+      # - net-sql-server-analytics-service
+      # - net-sql-server-catalog-service
+      # - net-sql-server-notification-service
+      # - net-sql-server-order-service
+      # - net-sql-server-payment-service
+      # - net-sql-server-user-service
+
+volumes:
+  sql-server-data:

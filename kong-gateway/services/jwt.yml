@@ -1,0 +1,8 @@
+  - name: jwt
+    url: http://jwt-service:80
+    routes:
+      - name: jwt
+        paths:
+          - /api/v1/jwt
+        strip_path: false
+        methods: [GET, POST, PUT, PATCH, DELETE]

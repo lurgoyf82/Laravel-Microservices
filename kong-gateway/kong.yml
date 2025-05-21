@@ -72,3 +72,21 @@ services:
           - /api/v1/users
         strip_path: false
         methods: [GET, POST, PUT, PATCH, DELETE]
+
+  # fallback service used to redirect unknown paths to the user service welcome page
+  - name: default-redirect
+    url: http://user-service:80
+    routes:
+      - name: catch-all
+        paths:
+          - ~^/.*
+        regex_priority: 0
+        strip_path: false
+        methods: [GET, POST, PUT, PATCH, DELETE]
+        plugins:
+          - name: request-termination
+            config:
+              status_code: 302
+              body: Redirecting...
+              headers:
+                Location: /

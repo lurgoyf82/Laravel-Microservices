@@ -3,9 +3,7 @@ services:
     build:
       context: ./kong-gateway
       dockerfile: Dockerfile
-    image: kong:3.6
     container_name: kong-gateway
-
     environment:
       KONG_DATABASE: "off"
       KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
@@ -17,4 +15,3 @@ services:
     networks:
       - internal
     restart: unless-stopped
-

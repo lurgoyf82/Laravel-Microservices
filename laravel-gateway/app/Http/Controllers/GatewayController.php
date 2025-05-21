@@ -28,6 +28,12 @@
                 return response()->json(['error' => 'Service not found'], Response::HTTP_NOT_FOUND);
             }
 
+            // 4.1) Method allowed check
+            $allowed = $route['allowed_methods'] ?? [];
+            if ($allowed && !in_array($request->method(), $allowed)) {
+                return response()->json(['error' => 'Method Not Allowed'], Response::HTTP_METHOD_NOT_ALLOWED);
+            }
+
             // 5) Build target URL
             $url  = $route['url']."/{$service}/{$version}";
             if ($parameters) {

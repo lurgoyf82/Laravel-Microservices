@@ -1,2 +1,65 @@
 _format_version: "3.0"
-services: []
+services:
+  - name: analytics-service
+    url: http://analytics-service:80
+    routes:
+      - name: analytics-service-v1
+        paths:
+          - /v1/analytics-service
+        strip_path: true
+
+  - name: catalog-service
+    url: http://catalog-service:80
+    routes:
+      - name: catalog-service-v1
+        paths:
+          - /v1/catalog-service
+        strip_path: true
+
+  - name: keycloak-auth-service
+    url: http://keycloak-auth-service:80
+    routes:
+      - name: keycloak-auth-service-v1
+        paths:
+          - /v1/keycloak-auth-service
+        strip_path: true
+
+  - name: laravel-auth-service
+    url: http://laravel-auth-service:80
+    routes:
+      - name: laravel-auth-service-v1
+        paths:
+          - /v1/laravel-auth-service
+        strip_path: true
+
+  - name: notification-service
+    url: http://notification-service:80
+    routes:
+      - name: notification-service-v1
+        paths:
+          - /v1/notification-service
+        strip_path: true
+
+  - name: order-service
+    url: http://order-service:80
+    routes:
+      - name: order-service-v1
+        paths:
+          - /v1/order-service
+        strip_path: true
+
+  - name: payment-service
+    url: http://payment-service:80
+    routes:
+      - name: payment-service-v1
+        paths:
+          - /v1/payment-service
+        strip_path: true
+
+  - name: user-service
+    url: http://user-service:80
+    routes:
+      - name: user-service-v1
+        paths:
+          - /v1/user-service
+        strip_path: true

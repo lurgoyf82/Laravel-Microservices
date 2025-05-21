@@ -6,4 +6,4 @@ mkdir -p /usr/local/kong/declarative
 cat /etc/kong/conf.d/*.yml > /usr/local/kong/declarative/kong.yml
 
 # Execute the original entrypoint
-exec /docker-entrypoint.sh "$@"
+exec /docker-entrypoint-custom.sh "$@"

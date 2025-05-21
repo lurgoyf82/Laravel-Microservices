@@ -1,5 +1,5 @@
 services:
-  api-gateway:
+  kong-gateway:
     build:
       context: ./kong-gateway
       dockerfile: Dockerfile

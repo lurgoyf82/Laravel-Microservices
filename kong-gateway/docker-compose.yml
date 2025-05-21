@@ -4,11 +4,13 @@ services:
       context: ./kong-gateway
     image: kong:3.6
     container_name: kong-gateway
+    entrypoint: ["/docker-entrypoint-custom.sh"]
     environment:
       KONG_DATABASE: "off"
       KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
     volumes:
-      - ./kong-gateway/kong.yml:/usr/local/kong/declarative/kong.yml
+      - ./kong-gateway/conf.d:/etc/kong/conf.d:ro
+      - ./kong-gateway/entrypoint.sh:/docker-entrypoint-custom.sh:ro
     ports:
       - "8000:8000"
       - "8443:8443"

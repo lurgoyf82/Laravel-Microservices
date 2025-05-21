@@ -1,0 +1,8 @@
+  - name: users
+    url: http://user-service:80
+    routes:
+      - name: users
+        paths:
+          - /api/v1/users
+        strip_path: false
+        methods: [GET, POST, PUT, PATCH, DELETE]

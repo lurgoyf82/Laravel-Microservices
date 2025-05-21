@@ -1,0 +1,8 @@
+  - name: catalog
+    url: http://catalog-service:80
+    routes:
+      - name: catalog
+        paths:
+          - /api/v1/catalog
+        strip_path: false
+        methods: [GET, POST, PUT, PATCH, DELETE]

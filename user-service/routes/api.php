@@ -8,4 +8,6 @@
     });
 
     Route::post('/register', [UserController::class, 'register']);
-    Route::post('/login', [UserController::class, 'login']);
+Route::post('/login', [UserController::class, 'login']);
+
+Route::apiResource('users', UserController::class)->except(['store']);

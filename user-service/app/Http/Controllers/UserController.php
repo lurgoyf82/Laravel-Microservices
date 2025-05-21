@@ -5,10 +5,11 @@
     use App\DTO\Requests\UserRequest\RequestLoginUserDto;
     use App\Services\UserServices\UserService;
     use Illuminate\Http\Request;
+    use App\Models\User;
 
-    class UserController extends Controller
-    {
-        private UserService $userService;
+class UserController extends Controller
+{
+    private UserService $userService;
 
         public function __construct(UserService $userService)
         {
@@ -26,7 +27,7 @@
             return response()->json($user);
         }
 
-        public function login(Request $request)
+    public function login(Request $request)
         {
             $userDTO = new RequestLoginUserDto(
                 $request->input('email'),
@@ -38,6 +39,28 @@
                 return response()->json(['message' => 'Invalid credentials'], 401);
             }
 
-            return response()->json($user);
-        }
+        return response()->json($user);
     }
+
+    public function index()
+    {
+        return response()->json(User::all());
+    }
+
+    public function show(User $user)
+    {
+        return response()->json($user);
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $user->update($request->only(['name','email','password']));
+        return response()->json($user);
+    }
+
+    public function destroy(User $user)
+    {
+        $user->delete();
+        return response()->noContent();
+    }
+}

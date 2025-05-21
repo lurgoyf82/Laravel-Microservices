@@ -1,0 +1,11 @@
+_format_version: "3.0"
+
+services:
+  - name: payment
+    url: http://payment-service:80
+    routes:
+      - name: payment
+        paths:
+          - /api/v1/payment
+        strip_path: false
+        methods: [GET, POST, PUT, PATCH, DELETE]

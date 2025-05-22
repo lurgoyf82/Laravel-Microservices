@@ -2,6 +2,10 @@ FROM kong:3.6
 
 USER root
 
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -L https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -o /usr/local/bin/yq && \
+    chmod +x /usr/local/bin/yq
 
 # Copy configuration files to the container
 COPY base-config.yml /tmp/base-config.yml
@@ -11,6 +15,7 @@ COPY build-config.sh /usr/local/bin/build-config.sh
 # Normalize line endings and set permissions and Make the build script executable
 RUN sed -i 's/\r$//' /usr/local/bin/build-config.sh && \
     chmod 755 /usr/local/bin/build-config.sh
+    
 
 # Set the entrypoint to run our script and then start Kong using the
 # default Kong Docker entrypoint. This ensures all required environment

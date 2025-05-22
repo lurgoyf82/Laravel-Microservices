@@ -1,4 +1,6 @@
+_format_version: "3.0"
 
+services:
   - name: notification
     url: http://notification-service:80
     routes:

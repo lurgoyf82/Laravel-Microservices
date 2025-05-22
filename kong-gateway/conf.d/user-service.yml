@@ -1,4 +1,6 @@
+_format_version: "3.0"
 
+services:
   - name: users
     url: http://user-service:80
     routes:
@@ -7,3 +9,8 @@
           - /api/v1/users
         strip_path: false
         methods: [GET, POST, PUT, PATCH, DELETE]
+        plugins:
+          - name: key-auth
+            config:
+              key_names:
+                - apikey

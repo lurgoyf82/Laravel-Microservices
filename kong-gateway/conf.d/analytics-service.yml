@@ -1,4 +1,6 @@
+_format_version: "3.0"
 
+services:
   - name: analytics
     url: http://analytics-service:80
     routes:

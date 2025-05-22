@@ -1,4 +1,6 @@
+_format_version: "3.0"
 
+services:
   - name: catalog
     url: http://catalog-service:80
     routes:

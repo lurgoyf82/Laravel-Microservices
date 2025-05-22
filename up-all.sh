@@ -17,4 +17,3 @@ docker compose \
   -f user-service/docker-compose.yml \
 # -f frontend/docker-compose.yml \
   up -d
-

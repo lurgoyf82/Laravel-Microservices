@@ -8,9 +8,11 @@ COPY base-config.yml /tmp/base-config.yml
 COPY conf.d/ /tmp/conf.d/
 COPY build-config.sh /usr/local/bin/build-config.sh
 
-# Normalize line endings and set permissions
+# Normalize line endings and set permissions and Make the build script executable
 RUN sed -i 's/\r$//' /usr/local/bin/build-config.sh && \
     chmod 755 /usr/local/bin/build-config.sh
 
-# Set the entrypoint to run our script and then start Kong
-ENTRYPOINT ["/bin/sh", "-c", "/usr/local/bin/build-config.sh && /docker-entrypoint.sh kong docker-start"]
+# Set the entrypoint to run our script and then start Kong using the
+# default Kong Docker entrypoint. This ensures all required environment
+# setup performed by the official script still executes correctly.
+ENTRYPOINT ["/bin/sh", "-c", "/usr/local/bin/build-config.sh && exec /docker-entrypoint.sh kong docker-start"]

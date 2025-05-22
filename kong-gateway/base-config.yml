@@ -29,6 +29,11 @@ services:
         strip_path: false
         methods: [GET, POST, PUT, PATCH, DELETE]
         plugins:
+          - name: response-transformer
+            config:
+              add:
+                headers:
+                  - "Location: http://user-service:80"
           - name: request-termination
             config:
               status_code: 302

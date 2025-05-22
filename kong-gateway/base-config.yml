@@ -24,7 +24,7 @@ services:
     routes:
       - name: catch-all
         paths:
-          - ~^/.*
+          - ~/.*
         regex_priority: 0
         strip_path: false
         methods: [GET, POST, PUT, PATCH, DELETE]
@@ -33,5 +33,3 @@ services:
             config:
               status_code: 302
               body: Redirecting...
-              headers:
-                Location: /

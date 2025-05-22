@@ -1,4 +1,3 @@
- # C:\Repos\laravel-microservices\kong-gateway\conf.d\base.yml
 _format_version: "3.0"
 
 services:
@@ -20,7 +19,6 @@ services:
         strip_path: false
         methods: [GET, POST, PUT, PATCH, DELETE]
 
-  # fallback service used to redirect unknown paths to the user service welcome page
   - name: default-redirect
     url: http://user-service:80
     routes:

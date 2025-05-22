@@ -8,7 +8,7 @@ COPY conf.d/ /tmp/conf.d/
 COPY build-config.sh /usr/local/bin/build-config.sh
 
 # Make the build script executable
-RUN chmod 0777 /usr/local/bin/build-config.sh
+RUN chmod 0755 /usr/local/bin/build-config.sh
 
 # Set the entrypoint to run our script and then start Kong using the
 # default Kong Docker entrypoint. This ensures all required environment

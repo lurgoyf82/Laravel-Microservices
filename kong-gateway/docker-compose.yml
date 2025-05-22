@@ -1,7 +1,7 @@
 services:
   kong-gateway:
     build:
-      context: .
+      context: ./kong-gateway
     container_name: kong-gateway
     environment:
       KONG_DATABASE: "off"

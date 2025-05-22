@@ -1,10 +1,17 @@
 @echo off
 REM ------------------------------------------------------------
-REM  start-stack.bat  —  Spins up the whole micro-services stack
+REM  start-stack.bat  â€”  Spins up the whole micro-services stack
 REM ------------------------------------------------------------
 
 REM  Run `docker compose` with all compose files.
 REM  The caret (^) lets us split one long command across lines.
+
+REM Ensure shell scripts use LF line endings
+for /R %%F in (*.sh) do (
+    powershell -Command "(Get-Content %%F) | Set-Content -NoNewline -Encoding utf8 %%F.tmp"
+    powershell -Command "(Get-Content -Raw %%F.tmp) -replace '\r\n','`n' | Set-Content -NoNewline -Encoding utf8 %%F"
+    del %%F.tmp
+)
   
 docker compose ^
   -f docker-compose.yml ^
@@ -20,7 +27,7 @@ docker compose ^
   -f user-service/docker-compose.yml ^
   up -d
 
-REM  Propagate Docker’s exit code and keep the window open
+REM  Propagate Dockerâ€™s exit code and keep the window open
 IF %ERRORLEVEL% NEQ 0 (
     echo.
     echo Docker Compose failed with exit code %ERRORLEVEL%.

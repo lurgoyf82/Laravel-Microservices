@@ -1,8 +1,0 @@
-  - name: notification
-    url: http://notification-service:80
-    routes:
-      - name: notification
-        paths:
-          - /api/v1/notification
-        strip_path: false
-        methods: [GET, POST, PUT, PATCH, DELETE]

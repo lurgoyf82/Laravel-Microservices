@@ -1,8 +1,0 @@
-  - name: analytics
-    url: http://analytics-service:80
-    routes:
-      - name: analytics
-        paths:
-          - /api/v1/analytics
-        strip_path: false
-        methods: [GET, POST, PUT, PATCH, DELETE]

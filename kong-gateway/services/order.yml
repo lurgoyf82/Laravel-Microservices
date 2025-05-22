@@ -1,8 +1,0 @@
-  - name: order
-    url: http://order-service:80
-    routes:
-      - name: order
-        paths:
-          - /api/v1/order
-        strip_path: false
-        methods: [GET, POST, PUT, PATCH, DELETE]

@@ -17,21 +17,14 @@
     */
 
     // Catch all under /api/v1/{service}/{path?}
-    $routesConfig = require config_path('gateway_routes.php');
-    $gatewayMethods = [];
-    foreach ($routesConfig as $config) {
-        $gatewayMethods = array_merge($gatewayMethods, $config['allowed_methods'] ?? []);
-    }
-    $gatewayMethods = array_values(array_unique($gatewayMethods));
-
-    Route::match($gatewayMethods, 'v1/', [GatewayController::class,'proxy']);
+    Route::any('v1/', [GatewayController::class,'proxy']);
         //->where('version','v[0-9]+')
         //->where('path', '.*');
 
     //Route::any('v1/{service}', [GatewayController::class,'proxy']);
 
     //Route::any('v1/{service}/{path}', [GatewayController::class,'proxy']);
-    Route::match($gatewayMethods, '{version}/{service}/{parameters?}', [GatewayController::class,'proxy'])
+    Route::any('{version}/{service}/{parameters?}', [GatewayController::class,'proxy'])
         ->where('version', 'v[0-9]+')          // v1, v2, v12…
         ->where('service', '[A-Za-z0-9\\-]+')  // utenti, order-service…
         ->where('parameters', '.*');           // zero o più segmenti

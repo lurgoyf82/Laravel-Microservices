@@ -1,29 +1,36 @@
 <?php
-
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class OrderController extends Controller
 {
     public function index()
     {
-        return response()->json(['message' => 'List of orders']);
+        return response()->json(Order::all());
     }
 
     public function store(Request $request)
     {
-        return response()->json(['message' => 'Order created'], Response::HTTP_CREATED);
+        $order = Order::create($request->only(['user_id','items','total','status']));
+        return response()->json($order, 201);
     }
 
-    public function update(Request $request, $order)
+    public function show(Order $order)
     {
-        return response()->json(['message' => "Order {$order} updated"]);
+        return response()->json($order);
     }
 
-    public function destroy($order)
+    public function update(Request $request, Order $order)
     {
-        return response()->json(['message' => "Order {$order} deleted"]);
+        $order->update($request->only(['user_id','items','total','status']));
+        return response()->json($order);
+    }
+
+    public function destroy(Order $order)
+    {
+        $order->delete();
+        return response()->noContent();
     }
 }

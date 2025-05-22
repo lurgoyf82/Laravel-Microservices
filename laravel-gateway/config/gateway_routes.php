@@ -13,7 +13,6 @@
             'cache_ttl'    => 3600,
             'auth'         => false,
             'rate_limit'   => 60,
-            'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
         ],
 
         // Auth
@@ -22,7 +21,6 @@
             'cache_ttl'    => 0,
             'auth'         => false,
             'rate_limit'   => 60,
-            'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
         ],
 
         // Catalog
@@ -31,7 +29,6 @@
             'cache_ttl'    => 3600,
             'auth'         => false,
             'rate_limit'   => 60,
-            'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
         ],
 
         // JWT
@@ -40,7 +37,6 @@
             'cache_ttl'    => 3600,
             'auth'         => false,
             'rate_limit'   => 60,
-            'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
         ],
 
         // Notification
@@ -49,7 +45,6 @@
             'cache_ttl'    => 3600,
             'auth'         => false,
             'rate_limit'   => 60,
-            'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
         ],
 
         // Order (requires auth)
@@ -58,10 +53,9 @@
             'cache_ttl'    => 0,
             'auth'         => true,
             'rate_limit'   => 60,
-            'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-        ],
 
-        /*
+
+            /*
         'order' => [
             'url'       => 'http://order-service:80/api',
     cache:
@@ -85,7 +79,6 @@
             'cache_ttl'    => 0,
             'auth'         => true,
             'rate_limit'   => 60,
-            'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
         ],
 
         // Users (caching reads, requires auth)
@@ -94,7 +87,6 @@
             'cache_ttl'    => 300,
             'auth'         => false,
             'rate_limit'   => 100,
-            'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
         ],
 
     ];

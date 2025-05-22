@@ -1,0 +1,39 @@
+ # C:\Repos\laravel-microservices\kong-gateway\conf.d\base.yml
+_format_version: "3.0"
+
+services:
+  - name: auth
+    url: http://auth-service:80
+    routes:
+      - name: auth
+        paths:
+          - /api/v1/auth
+        strip_path: false
+        methods: [GET, POST, PUT, PATCH, DELETE]
+
+  - name: jwt
+    url: http://jwt-service:80
+    routes:
+      - name: jwt
+        paths:
+          - /api/v1/jwt
+        strip_path: false
+        methods: [GET, POST, PUT, PATCH, DELETE]
+
+  # fallback service used to redirect unknown paths to the user service welcome page
+  - name: default-redirect
+    url: http://user-service:80
+    routes:
+      - name: catch-all
+        paths:
+          - ~^/.*
+        regex_priority: 0
+        strip_path: false
+        methods: [GET, POST, PUT, PATCH, DELETE]
+        plugins:
+          - name: request-termination
+            config:
+              status_code: 302
+              body: Redirecting...
+              headers:
+                Location: /

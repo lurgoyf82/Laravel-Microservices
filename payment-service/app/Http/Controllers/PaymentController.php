@@ -1,33 +1,36 @@
 <?php
-
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
     public function index()
     {
-        return response()->json(['message' => 'list payments']);
+        return response()->json(Payment::all());
     }
 
     public function store(Request $request)
     {
-        return response()->json(['message' => 'create payment'], 201);
+        $payment = Payment::create($request->only(['order_id','amount','method','status']));
+        return response()->json($payment, 201);
     }
 
-    public function show(string $id)
+    public function show(Payment $payment)
     {
-        return response()->json(['message' => 'show payment', 'id' => $id]);
+        return response()->json($payment);
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, Payment $payment)
     {
-        return response()->json(['message' => 'update payment', 'id' => $id]);
+        $payment->update($request->only(['order_id','amount','method','status']));
+        return response()->json($payment);
     }
 
-    public function destroy(string $id)
+    public function destroy(Payment $payment)
     {
-        return response()->json(['message' => 'delete payment', 'id' => $id]);
+        $payment->delete();
+        return response()->noContent();
     }
 }

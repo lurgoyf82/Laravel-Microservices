@@ -1,50 +1,36 @@
 <?php
-
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
-    public function index(string $version)
+    public function index()
     {
-        return response()->json(['version' => $version, 'method' => 'index']);
+        return response()->json(Notification::all());
     }
 
-    public function store(Request $request, string $version)
+    public function store(Request $request)
     {
-        return response()->json([
-            'version' => $version,
-            'method' => 'store',
-            'data' => $request->all(),
-        ]);
+        $notification = Notification::create($request->only(['user_id','message','channel','status']));
+        return response()->json($notification, 201);
     }
 
-    public function show(string $version, string $id)
+    public function show(Notification $notification)
     {
-        return response()->json([
-            'version' => $version,
-            'method' => 'show',
-            'id' => $id,
-        ]);
+        return response()->json($notification);
     }
 
-    public function update(Request $request, string $version, string $id)
+    public function update(Request $request, Notification $notification)
     {
-        return response()->json([
-            'version' => $version,
-            'method' => 'update',
-            'id' => $id,
-            'data' => $request->all(),
-        ]);
+        $notification->update($request->only(['user_id','message','channel','status']));
+        return response()->json($notification);
     }
 
-    public function destroy(string $version, string $id)
+    public function destroy(Notification $notification)
     {
-        return response()->json([
-            'version' => $version,
-            'method' => 'destroy',
-            'id' => $id,
-        ]);
+        $notification->delete();
+        return response()->noContent();
     }
 }

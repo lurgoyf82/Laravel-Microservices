@@ -2,6 +2,7 @@ services:
   kong-gateway:
     build:
       context: ./kong-gateway
+      dockerfile: Dockerfile
     container_name: kong-gateway
     environment:
       KONG_DATABASE: "off"
